@@ -46,7 +46,11 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User createUser(UserDTO userDTO) throws IOException {
-        User user = new User(userDTO.name(), userDTO.email(), userDTO.age());
+        User user = User.builder()
+                        .name(userDTO.name())
+                        .email(userDTO.email())
+                        .age(userDTO.age())
+                        .build();
         Files.write(filePath, userDTO.toCsvLine().getBytes());
         return user;
     }

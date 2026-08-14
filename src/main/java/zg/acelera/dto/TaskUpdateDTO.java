@@ -8,11 +8,11 @@ public record TaskUpdateDTO(
         Integer id,
         String name,
         String description,
+        Integer priority,
+        String status,
         LocalDateTime startDate,
         LocalDateTime endDate,
-        Integer priority,
-        String category,
-        String status
+        String category
 ) {
     public TaskUpdateDTO {
         if (id == null || id <= 0) throw new TaskInfoWrongException("Id is required and must be greater than zero");

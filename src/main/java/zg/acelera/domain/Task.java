@@ -23,4 +23,8 @@ public class Task {
     private LocalDateTime endDate;
 
     private Category category;
+
+    public String toCsvLine() {
+        return name + ";" + description + ";" + endDate.toString() + ";" + priority + ";" + category.getCategory() + ";" + status.name();
+    }
 }

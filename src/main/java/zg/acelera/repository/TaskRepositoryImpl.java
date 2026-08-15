@@ -43,21 +43,21 @@ public class TaskRepositoryImpl implements TaskRepository {
                     .map(line -> {
                         String[] data = line.split(";");
 
-                        if (data.length >= 8) {
+                        if (data.length >= 7) {
                             return new Task(
+                                    data[0],
                                     data[1],
-                                    data[2],
-                                    Integer.parseInt(data[3]),
-                                    Status.valueOf(data[4]),
+                                    Integer.parseInt(data[2]),
+                                    Status.valueOf(data[3]),
+                                    LocalDateTime.parse(data[4]),
                                     LocalDateTime.parse(data[5]),
-                                    LocalDateTime.parse(data[6]),
-                                    new Category(data[7])
+                                    new Category(data[6])
                             );
                         }
                         return null;
                     })
                     .filter(Objects::nonNull)
-                    .toList();
+                    .collect(Collectors.toList());
         }
         return tasks;
     }
@@ -112,7 +112,7 @@ public class TaskRepositoryImpl implements TaskRepository {
     private void saveAll(List<Task> tasks) throws IOException {
         List<String> lines = tasks.stream()
                 .map(Task::toCsvLine)
-                .toList();
+                .collect(Collectors.toList());
 
         Files.write(filePath, lines);
     }

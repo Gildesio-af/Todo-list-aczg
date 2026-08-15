@@ -25,6 +25,14 @@ public class Task {
     private Category category;
 
     public String toCsvLine() {
-        return name + ";" + description + ";" + endDate.toString() + ";" + priority + ";" + category.getCategory() + ";" + status.name();
+        return String.join(";",
+                this.name,
+                this.description,
+                String.valueOf(this.priority),
+                this.status.name(),
+                this.startDate.toString(),
+                this.endDate.toString(),
+                this.category.getCategory()
+        );
     }
 }

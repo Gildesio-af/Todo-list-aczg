@@ -2,6 +2,9 @@ package zg.acelera.domain;
 
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -20,4 +23,7 @@ public class User {
     @EqualsAndHashCode.Include
     private String email;
     private int age;
+
+    @Builder.Default
+    List<Task> tasks = new ArrayList<>();
 }

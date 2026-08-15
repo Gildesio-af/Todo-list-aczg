@@ -21,7 +21,7 @@ public class TaskService {
                     dto.name(),
                     dto.description(),
                     dto.priority(),
-                    Status.TODO,
+                    Status.valueOf(dto.status()),
                     dto.startDate(),
                     dto.endDate(),
                     new Category(dto.category())

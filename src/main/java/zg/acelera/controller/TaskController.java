@@ -9,7 +9,7 @@ import zg.acelera.util.interface_user.TaskInterface;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class TasksController {
+public class TaskController {
 
     private final TaskService taskService;
     private final TaskInterface taskInterface;
@@ -19,7 +19,7 @@ public class TasksController {
             Task task = taskService.createTask(dto);
             taskInterface.showMessage("Task created successfully: " + task.getName());
         } catch (RuntimeException e) {
-            taskInterface.showMessage("Failed to create task: " + e.getMessage());
+            taskInterface.showMessage("Error creating task: " + e.getMessage());
         }
     }
 
@@ -73,15 +73,12 @@ public class TasksController {
         taskInterface.showMessage(counts);
     }
 
-    // --- Helper Method ---
-
     private void printTaskList(List<Task> tasks) {
         if (tasks == null || tasks.isEmpty()) {
             taskInterface.showMessage("No tasks found.");
             return;
         }
 
-        // Supondo que a sua classe Task tenha um método toString() bem formatado
         for (Task task : tasks) {
             taskInterface.showMessage(task.toString());
         }

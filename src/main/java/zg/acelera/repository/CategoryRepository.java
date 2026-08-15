@@ -1,6 +1,5 @@
 package zg.acelera.repository;
 
-import lombok.RequiredArgsConstructor;
 import zg.acelera.domain.Category;
 
 import java.io.IOException;
@@ -8,11 +7,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
+import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 public class CategoryRepository {
     private static final String FILE_NAME = "categories.csv";
     private final Path filePath;
+
+    public CategoryRepository() {
+        this.filePath = Path.of(FILE_NAME);
+        initializeFile();
+    }
 
     private void initializeFile() {
         try {
@@ -26,7 +30,7 @@ public class CategoryRepository {
         return Files.lines(filePath)
                 .filter(line -> !line.trim().isEmpty())
                 .map(Category::new)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public void save(Category category) throws IOException {

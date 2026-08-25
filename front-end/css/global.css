@@ -32,23 +32,23 @@ body {
 }
 
 .button-white {
-    font: 500 14px/14px 'Manrope', sans-serif;
+    font: 500 14px/14px 'Manrope', Roboto sans-serif;
     color: var(--white);
     letter-spacing: 0.7px;
 }
 
 .button-black {
-    font: 500 14px/14px 'Manrope', sans-serif;
+    font: 500 14px/14px 'Manrope', Roboto sans-serif;
     color: var(--black);
     letter-spacing: 0.7px;
 }
 
 .text-black {
-    font: 600 16px/22px 'Manrope', sans-serif;
+    font: 600 16px/22px 'Manrope', Roboto sans-serif;
     color: var(--black);
 }
 
 .search-item {
-    font: 500 auto 'Manrope', sans-serif;
+    font: 500 auto 'Manrope', Roboto sans-serif;
     color: var(--gray-search)
 }

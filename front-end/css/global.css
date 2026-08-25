@@ -17,6 +17,7 @@ body {
     --main-background: #E5EEFF;
     --aside-main-background: #81AAFF;
     --gray-item: #5C5F61;
+    --gray-search: #45464D;
 }
 
 .title {
@@ -45,4 +46,9 @@ body {
 .text-black {
     font: 600 16px/22px 'Manrope', sans-serif;
     color: var(--black);
+}
+
+.search-item {
+    font: 500 auto 'Manrope', sans-serif;
+    color: var(--gray-search)
 }

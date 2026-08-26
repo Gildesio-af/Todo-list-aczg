@@ -13,8 +13,9 @@ body {
     --p-blue: #2170E4;
     --black: #000;
     --white: #fff;
-    --aside-background: #C6C6CD;
-    --main-background: #E5EEFF;
+    --aside-background: #dce9ff84;
+    --aside-button-hover: #DCE9FF;
+    --main-background: #F4F7FC;
     --aside-main-background: #81AAFF;
     --gray-item: #5C5F61;
     --gray-search: #45464D;

@@ -50,7 +50,7 @@ aside li img {
 }
 
 aside li:hover {
-    background-color: #C8CDD8;
+    background-color: var(--aside-button-hover);
 
     & img {
         opacity: 0.8;

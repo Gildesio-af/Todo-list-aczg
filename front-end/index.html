@@ -35,7 +35,7 @@
             <h2 class="sub-title">TaskFlow</h2>
         </div>
         <ul>
-            <li>
+            <li class="aside-session-selected">
                 <img src="assets/task.svg" alt="icone de tarefa">
                 <p class="text-black">Minhas tarefas</p>
             </li>
@@ -83,6 +83,66 @@
             </ul>
         </div>
     </main>
+    <div id="taskModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="sub-title">Nova Tarefa</h2>
+                <button id="closeModalBtn" class="close-btn">&times;</button>
+            </div>
+
+            <form id="createTaskForm">
+                <div class="form-group">
+                    <label for="taskName" class="text-black">Nome da Tarefa *</label>
+                    <input type="text" id="taskName" name="name" class="form-input" required
+                        placeholder="Ex: Revisar documentação">
+                </div>
+
+                <div class="form-group">
+                    <label for="taskDescription" class="text-black">Descrição *</label>
+                    <textarea id="taskDescription" name="description" class="form-input" required rows="3"
+                        placeholder="Detalhes da tarefa..."></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="taskCategory" class="text-black">Categoria *</label>
+                        <input type="text" id="taskCategory" name="category" class="form-input" required
+                            placeholder="Ex: Projeto Alpha">
+                    </div>
+                    <div class="form-group">
+                        <label for="taskPriority" class="text-black">Prioridade (1 a 5) *</label>
+                        <input type="number" id="taskPriority" name="priority" class="form-input" min="1" max="5"
+                            value="1" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="taskStartDate" class="text-black">Data/Hora de Início</label>
+                        <input type="datetime-local" id="taskStartDate" name="startDate" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="taskEndDate" class="text-black">Data/Hora de Término</label>
+                        <input type="datetime-local" id="taskEndDate" name="endDate" class="form-input">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="taskStatus" class="text-black">Status *</label>
+                    <select id="taskStatus" name="status" class="form-input" required>
+                        <option value="TODO" selected>A Fazer (TODO)</option>
+                        <option value="DOING">Fazendo (DOING)</option>
+                        <option value="DONE">Concluído (DONE)</option>
+                    </select>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" id="cancelTaskBtn" class="btn-cancel text-black">Cancelar</button>
+                    <button type="submit" class="btn-submit button-white">Criar Tarefa</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </body>
 
 </html>

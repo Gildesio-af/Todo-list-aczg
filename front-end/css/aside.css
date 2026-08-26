@@ -56,3 +56,18 @@ aside li:hover {
         opacity: 0.8;
     }
 }
+
+
+.aside-session-selected {
+    background-color: var(--aside-button-hover);
+
+    & p.text-black {
+        color: var(--p-blue);
+        font-weight: 700;
+    }
+
+
+    & img {
+        opacity: 1;
+    }
+}

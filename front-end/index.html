@@ -18,10 +18,10 @@
     <header>
         <div id="search-task">
             <img src="assets/magnifying-glass.svg" alt="Lupa">
-            <input type="text" name="search-task" id="search-task" placeholder="Buscar tarefas..." class="search-item">
+            <input type="text" name="search-task" id="search-input" placeholder="Buscar tarefas..." class="search-item">
         </div>
 
-        <button class="button-white">
+        <button id="btn-new-task" class="button-white">
             <img src="assets/plus.svg" alt="Adicionar">
             <span>Nova Tarefa</span>
         </button>
@@ -35,15 +35,15 @@
             <h2 class="sub-title">TaskFlow</h2>
         </div>
         <ul>
-            <li class="aside-session-selected">
+            <li class="aside-session-selected" data-filter="all">
                 <img src="assets/task.svg" alt="icone de tarefa">
                 <p class="text-black">Minhas tarefas</p>
             </li>
-            <li>
+            <li data-filter="important">
                 <img src="assets/star.png" alt="icone de estrela">
                 <p class="text-black">Importantes</p>
             </li>
-            <li>
+            <li data-filter="done">
                 <img src="assets/correct2.svg" alt="icone de correto">
                 <p class="text-black">Concluídas</p>
             </li>
@@ -59,28 +59,8 @@
             </div>
 
             <ul class="task-list">
-                <li class="task-item">
-                    <input type="checkbox" class="task-checkbox">
-                    <div class="task-info">
-                        <p class="text-black">Revisar documentação do novo módulo de pagamento</p>
-                        <div class="task-meta">
-                            <img src="./assets/clock.svg" alt="Ícone de Relógio" class="meta-icon">
-                            <span class="search-item">10:30 - 11:30</span>
-                        </div>
-                    </div>
-                </li>
-
-                <li class="task-item">
-                    <input type="checkbox" class="task-checkbox">
-                    <div class="task-info">
-                        <p class="text-black">Reunião de alinhamento com a equipe de marketing</p>
-                        <div class="task-meta">
-                            <img src="./assets/clock.svg" alt="Ícone de Relógio" class="meta-icon">
-                            <span class="search-item">14:30 - 15:30</span>
-                        </div>
-                    </div>
-                </li>
             </ul>
+
         </div>
     </main>
     <div id="taskModal" class="modal-overlay">
@@ -143,6 +123,57 @@
             </form>
         </div>
     </div>
+
+    <div id="taskDetailsModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="sub-title" id="detailsTaskName">Detalhes da Tarefa</h2>
+                <button id="closeDetailsModalBtn" class="close-btn">&times;</button>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
+                <div>
+                    <strong class="text-black">Descrição:</strong>
+                    <p id="detailsTaskDescription" class="text-black" style="margin-top: 4px; opacity: 0.8;"></p>
+                </div>
+
+                <div class="form-row">
+                    <div>
+                        <strong class="text-black">Categoria:</strong>
+                        <p id="detailsTaskCategory" class="text-black" style="margin-top: 4px; opacity: 0.8;"></p>
+                    </div>
+                    <div>
+                        <strong class="text-black">Prioridade:</strong>
+                        <p id="detailsTaskPriority" class="text-black" style="margin-top: 4px; opacity: 0.8;"></p>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div>
+                        <strong class="text-black">Início:</strong>
+                        <p id="detailsTaskStartDate" class="text-black" style="margin-top: 4px; opacity: 0.8;"></p>
+                    </div>
+                    <div>
+                        <strong class="text-black">Término:</strong>
+                        <p id="detailsTaskEndDate" class="text-black" style="margin-top: 4px; opacity: 0.8;"></p>
+                    </div>
+                </div>
+
+                <div>
+                    <strong class="text-black">Status:</strong>
+                    <p id="detailsTaskStatus" class="text-black" style="margin-top: 4px; opacity: 0.8;"></p>
+                </div>
+            </div>
+
+            <div class="modal-footer" style="margin-top: 24px; display: flex; gap: 8px; justify-content: flex-end;">
+                <button type="button" id="editTaskBtn" class="btn-submit button-white"
+                    style="margin-left: auto;">Editar</button>
+                <button type="button" id="closeDetailsBtn" class="btn-cancel text-black">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
 </body>
 
 </html>

@@ -18,6 +18,11 @@ public class CategoryRepository {
         initializeFile();
     }
 
+    public CategoryRepository(Path filePath) {
+        this.filePath = filePath;
+        initializeFile();
+    }
+
     private void initializeFile() {
         try {
             if (!Files.exists(filePath)) Files.createFile(filePath);

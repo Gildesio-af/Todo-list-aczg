@@ -24,6 +24,7 @@ public class User {
     private String email;
     private int age;
 
+    @ToString.Exclude
     @Builder.Default
     List<Task> tasks = new ArrayList<>();
 }

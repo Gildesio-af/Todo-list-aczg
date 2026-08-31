@@ -33,6 +33,8 @@ public class UserService {
             return null;
         }
 
+        if (user == null) return null;
+
         return user.toString();
     }
 

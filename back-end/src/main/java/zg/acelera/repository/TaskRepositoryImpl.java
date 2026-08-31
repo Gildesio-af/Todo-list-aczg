@@ -25,6 +25,11 @@ public class TaskRepositoryImpl implements TaskRepository {
         initializeFile();
     }
 
+    public TaskRepositoryImpl(Path path) {
+        this.filePath = path;
+        initializeFile();
+    }
+
     private void initializeFile() {
         try {
             if (!Files.exists(filePath)) Files.createFile(filePath);
@@ -66,7 +71,7 @@ public class TaskRepositoryImpl implements TaskRepository {
     public List<Task> findByCategory(String category) {
         try {
             return findAll().stream()
-                    .filter(task -> task.getCategory().getCategory().equalsIgnoreCase(category))
+                    .filter(task -> task.getCategory().getName().equalsIgnoreCase(category))
                     .toList();
         } catch (IOException e) {
             System.err.println("Error reading tasks by category: " + e.getMessage());

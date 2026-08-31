@@ -34,7 +34,7 @@ public class CategoryController {
         }
 
         userInterface.showMessage("--- Categories ---");
-        categories.forEach(c -> userInterface.showMessage("- " + c.getCategory()));
+        categories.forEach(c -> userInterface.showMessage("- " + c.getName()));
     }
 
     public void deleteCategory(String name) {

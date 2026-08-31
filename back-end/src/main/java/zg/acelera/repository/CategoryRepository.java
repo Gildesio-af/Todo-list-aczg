@@ -34,17 +34,17 @@ public class CategoryRepository {
     }
 
     public void save(Category category) throws IOException {
-        String lineToSave = category.getCategory() + System.lineSeparator();
+        String lineToSave = category.getName() + System.lineSeparator();
         Files.writeString(filePath, lineToSave, StandardOpenOption.APPEND);
     }
 
     public boolean delete(String categoryName) throws IOException {
         List<Category> categories = findAll();
-        boolean removed = categories.removeIf(c -> c.getCategory().equalsIgnoreCase(categoryName));
+        boolean removed = categories.removeIf(c -> c.getName().equalsIgnoreCase(categoryName));
 
         if (removed) {
             List<String> lines = categories.stream()
-                    .map(Category::getCategory)
+                    .map(Category::getName)
                     .toList();
             Files.write(filePath, lines);
         }

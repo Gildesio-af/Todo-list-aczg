@@ -11,11 +11,12 @@ import java.nio.file.Paths;
 import java.util.stream.Stream;
 
 public class UserRepositoryImpl implements UserRepository {
-    private static final String USER_FILE_NAME = "user.csv";
+    private String userFileName;
     private final Path filePath;
 
-    public UserRepositoryImpl() {
-        this.filePath = Paths.get(USER_FILE_NAME);
+    public UserRepositoryImpl(String userFileName) {
+        this.userFileName = userFileName;
+        this.filePath = Paths.get(userFileName);
         initializeFile();
     }
 

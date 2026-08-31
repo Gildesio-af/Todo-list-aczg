@@ -11,5 +11,5 @@ import lombok.*;
 @ToString
 public class Category {
     @EqualsAndHashCode.Include
-    private String category;
+    private String name;
 }

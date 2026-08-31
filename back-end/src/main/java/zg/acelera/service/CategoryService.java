@@ -15,7 +15,7 @@ public class CategoryService {
             List<Category> existingCategories = repository.findAll();
 
             boolean exists = existingCategories.stream()
-                    .anyMatch(c -> c.getCategory().equalsIgnoreCase(name));
+                    .anyMatch(c -> c.getName().equalsIgnoreCase(name));
 
             if (exists) return false;
 

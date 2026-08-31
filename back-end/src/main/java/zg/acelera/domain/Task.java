@@ -32,7 +32,7 @@ public class Task {
                 this.status.name(),
                 this.startDate.toString(),
                 this.endDate.toString(),
-                this.category.getCategory()
+                this.category.getName()
         );
     }
 }

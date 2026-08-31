@@ -1,7 +1,9 @@
 package zg.acelera.dto;
 
+import lombok.Builder;
 import zg.acelera.util.exception.UserInfoWrongException;
 
+@Builder
 public record UserDTO (
         String name,
         String email,

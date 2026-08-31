@@ -26,7 +26,7 @@ public class Main {
         UserInterface userInterface = new UserInterfaceImpl(scanner);
         TaskInterface taskInterface = new TaskInterfaceImpl(scanner);
 
-        UserRepositoryImpl userRepository = new UserRepositoryImpl();
+        UserRepositoryImpl userRepository = new UserRepositoryImpl("user.csv");
         UserService userService = new UserService(userRepository);
         UserController usersController = new UserController(userService, userInterface);
         UserMenu userMenu = new UserMenu(usersController, userInterface);

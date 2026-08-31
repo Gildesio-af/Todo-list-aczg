@@ -1,7 +1,9 @@
 package zg.acelera.dto;
 
+import lombok.Builder;
 import zg.acelera.util.exception.UserInfoWrongException;
 
+@Builder
 public record UserUpdateDTO(String name, String email, Integer age) {
     public UserUpdateDTO {
         if (name != null && (name.length() < 3 || name.length() > 50))

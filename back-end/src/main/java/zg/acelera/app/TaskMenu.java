@@ -33,7 +33,11 @@ public class TaskMenu {
                 case 4 -> controller.listTasksOrderedByPriority();
                 case 5 -> filterMenu();
                 case 6 -> controller.showTaskCounts();
-                case 7 -> categoryMenu.start();
+                case 7 -> {
+                    taskInterface.showMessage("Enter the exact Task Name to update: ");
+                    controller.updateTask(taskInterface.readText(), taskInterface.readTaskUpdateDTO());
+                }
+                case 8 -> categoryMenu.start();
                 case 0 -> {
                     taskInterface.showMessage("Returning to Main Menu...");
                     running = false;
@@ -51,7 +55,8 @@ public class TaskMenu {
         System.out.println("4 - List Tasks ordered by Priority");
         System.out.println("5 - Filter Tasks (By Category or Status)");
         System.out.println("6 - Show Task Dashboard (TODO/DOING/DONE counts)");
-        System.out.println("7 - Manage Categories");
+        System.out.println("7 - Update Task");
+        System.out.println("8 - Manage Categories");
         System.out.println("0 - Back to Main Menu");
         System.out.print("Choose an option: ");
     }

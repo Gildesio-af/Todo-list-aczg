@@ -3,6 +3,7 @@ package zg.acelera.util.interface_user;
 import lombok.RequiredArgsConstructor;
 import zg.acelera.domain.enums.Status;
 import zg.acelera.dto.TaskDTO;
+import zg.acelera.dto.TaskUpdateDTO;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -62,6 +63,33 @@ public class TaskInterfaceImpl implements TaskInterface {
         String status = readStatusCorrectly();
 
         return new TaskDTO(name, description, priority, status, startDate, endDate, categoryName);
+    }
+
+    @Override
+    public TaskUpdateDTO readTaskUpdateDTO() {
+        System.out.println("Aperte enter se quiser manter o valor atual.");
+        System.out.print("Task Name: ");
+        String name = readText();
+
+        System.out.print("Description: ");
+        String description = readText();
+
+        System.out.print("Priority (1 to 5): ");
+        Integer priority = readInteger();
+
+        System.out.print("Start Date (Format: yyyy-MM-dd HH:mm): ");
+        LocalDateTime startDate = readDateTimeSafely();
+
+        System.out.print("End Date (Format: yyyy-MM-dd HH:mm): ");
+        LocalDateTime endDate = readDateTimeSafely();
+
+        System.out.print("Category Name: ");
+        String categoryName = readText();
+
+        System.out.print("Status (TODO, DOING, DONE): ");
+        String status = readStatusCorrectly();
+
+        return new TaskUpdateDTO(name, description, priority, status, startDate, endDate, categoryName);
     }
 
     private LocalDateTime readDateTimeSafely() {

@@ -1,7 +1,10 @@
 package zg.acelera.dto;
 
+import lombok.Builder;
+
 import java.time.LocalDateTime;
 
+@Builder
 public record TaskDTO(
         String name,
         String description,

@@ -99,6 +99,25 @@ public class TaskRepositoryImpl implements TaskRepository {
     }
 
     @Override
+    public Task update(String taskName, Task task) throws IOException {
+        List<Task> tasks = findAll();
+
+        Integer indexToUpdate = tasks.stream()
+                                .filter(t -> t.getName().equals(taskName))
+                                .findAny()
+                                .map(tasks::indexOf)
+                                .orElse(null);
+
+        if (indexToUpdate != null) {
+            tasks.set(indexToUpdate, task);
+            saveAll(tasks);
+            return task;
+        }
+
+        return null;
+    }
+
+    @Override
     public boolean delete(Task task) throws IOException {
         List<Task> tasks = new ArrayList<>(findAll());
 

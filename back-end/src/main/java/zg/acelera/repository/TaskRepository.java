@@ -11,5 +11,6 @@ public interface TaskRepository {
     List<Task> findOrderedByPriority() throws IOException;
     List<Task> findByStatus(String status) throws IOException;
     Task save(Task task) throws IOException;
+    Task update(String taskName, Task task) throws IOException;
     boolean delete(Task task) throws IOException;
 }

@@ -160,6 +160,49 @@ class TaskRepositorySpec extends Specification{
         newTask.category.name == "ACZG"
     }
 
+    def "update should update a task in the file"() {
+        given: "a file with three tasks and a task to update and a task to update"
+        Files.write(filePath, lines)
+        LocalDateTime startDate = LocalDateTime.now();
+        Task task = Task.builder()
+                .name("Java 5")
+                .description("Mais um teste")
+                .priority(1)
+                .status(Status.TODO)
+                .startDate(startDate)
+                .endDate(startDate.plusDays(1))
+                .category(new Category("ACZG 2"))
+                .build()
+
+        when: "update is called with the task to update"
+        Task updatedTask = repository.update("Java 4", task)
+
+        then: "The task should be updated in the file"
+        updatedTask.name == "Java 5"
+        updatedTask.description == "Mais um teste"
+    }
+
+    def "update should return null when task was not found"() {
+        given: "a file with three tasks and a task to update"
+        Files.write(filePath, lines)
+
+        Task task = Task.builder()
+                .name("Java 5")
+                .description("Mais um teste")
+                .priority(1)
+                .status(Status.TODO)
+                .startDate(LocalDateTime.now())
+                .endDate(LocalDateTime.now().plusDays(1))
+                .category(new Category("ACZG 2"))
+                .build()
+
+        when: "update is called with a non-existing task name"
+        Task updatedTask = repository.update("Non Existing Task", task)
+
+        then: "The task should not be updated and null should be returned"
+        updatedTask == null
+    }
+
     def "delete should remove a task from the file when task exists"() {
         given: "a file with three tasks an existing task to delete"
         Files.write(filePath, lines)
@@ -191,5 +234,4 @@ class TaskRepositorySpec extends Specification{
         then: "no line should be removed from the file"
         Files.lines(filePath).count() == 3
     }
-
 }

@@ -7,7 +7,7 @@ import zg.acelera.app.UserMenu;
 import zg.acelera.controller.CategoryController;
 import zg.acelera.controller.TaskController;
 import zg.acelera.controller.UserController;
-import zg.acelera.repository.CategoryRepository;
+import zg.acelera.repository.CategoryRepositoryImpl;
 import zg.acelera.repository.TaskRepositoryImpl;
 import zg.acelera.repository.UserRepositoryImpl;
 import zg.acelera.service.CategoryService;
@@ -39,8 +39,8 @@ public class Main {
     }
 
     private static MainMenu getMainMenu(UserInterface userInterface, TaskInterface taskInterface, UserMenu userMenu) {
-        CategoryRepository categoryRepository = new CategoryRepository();
-        CategoryService categoryService = new CategoryService(categoryRepository);
+        CategoryRepositoryImpl categoryRepositoryImpl = new CategoryRepositoryImpl();
+        CategoryService categoryService = new CategoryService(categoryRepositoryImpl);
         CategoryController categoryController = new CategoryController(categoryService, userInterface);
         CategoryMenu categoryMenu = new CategoryMenu(categoryController, userInterface);
 

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import zg.acelera.domain.Category;
 import zg.acelera.repository.CategoryRepository;
 
+import java.io.IOException;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -11,6 +12,10 @@ public class CategoryService {
     private final CategoryRepository repository;
 
     public boolean createCategory(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            return false;
+        }
+        
         try {
             List<Category> existingCategories = repository.findAll();
 
@@ -21,7 +26,7 @@ public class CategoryService {
 
             repository.save(new Category(name));
             return true;
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new RuntimeException("Error creating category", e);
         }
     }
@@ -29,7 +34,7 @@ public class CategoryService {
     public List<Category> listCategories() {
         try {
             return repository.findAll();
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new RuntimeException("Error listing categories", e);
         }
     }

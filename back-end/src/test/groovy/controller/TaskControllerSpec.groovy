@@ -5,6 +5,7 @@ import spock.lang.Unroll
 import zg.acelera.controller.TaskController
 import zg.acelera.domain.Task
 import zg.acelera.dto.TaskDTO
+import zg.acelera.dto.TaskUpdateDTO
 import zg.acelera.service.TaskService
 import zg.acelera.util.interface_user.TaskInterface
 
@@ -49,6 +50,32 @@ class TaskControllerSpec extends Specification {
         then: "exception is caught and error message is shown"
         1 * taskService.createTask(taskDTO) >> { throw new RuntimeException("DB error") }
         1 * taskInterface.showMessage("Error creating task: DB error")
+    }
+
+    def "updateTask should show success message when task is updated"() {
+        given: "a valid DTO and a mocked task"
+        TaskUpdateDTO dto = TaskUpdateDTO.builder().description("New description").build()
+        Task mockTask = Mock(Task)
+
+        when: "updateTask is called"
+        controller.updateTask("  Old Name  ", dto)
+
+        then: "the service updates the task and displays success"
+        1 * taskService.updateTask("Old Name", dto) >> mockTask
+        1 * mockTask.getName() >> "Updated Task Name"
+        1 * taskInterface.showMessage("Task updated successfully: Updated Task Name")
+    }
+
+    def "updateTask should show error message when service throws exception"() {
+        given: "a DTO"
+        TaskUpdateDTO dto = TaskUpdateDTO.builder().build()
+
+        when: "updateTask is called and the service fails"
+        controller.updateTask("Old Name", dto)
+
+        then: "the exception is caught and the error message is displayed"
+        1 * taskService.updateTask("Old Name", dto) >> { throw new RuntimeException("Task not found") }
+        1 * taskInterface.showMessage("Error updating task: Task not found")
     }
 
     @Unroll

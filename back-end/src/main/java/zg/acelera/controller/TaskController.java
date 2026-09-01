@@ -3,6 +3,7 @@ package zg.acelera.controller;
 import lombok.RequiredArgsConstructor;
 import zg.acelera.domain.Task;
 import zg.acelera.dto.TaskDTO;
+import zg.acelera.dto.TaskUpdateDTO;
 import zg.acelera.service.TaskService;
 import zg.acelera.util.interface_user.TaskInterface;
 
@@ -20,6 +21,15 @@ public class TaskController {
             taskInterface.showMessage("Task created successfully: " + task.getName());
         } catch (RuntimeException e) {
             taskInterface.showMessage("Error creating task: " + e.getMessage());
+        }
+    }
+
+    public void updateTask(String taskName, TaskUpdateDTO dto) {
+        try {
+            Task task = taskService.updateTask(taskName.trim(), dto);
+            taskInterface.showMessage("Task updated successfully: " + task.getName());
+        } catch (Exception e) {
+            taskInterface.showMessage("Error updating task: " + e.getMessage());
         }
     }
 

@@ -5,6 +5,7 @@ import zg.acelera.domain.Category;
 import zg.acelera.domain.Task;
 import zg.acelera.domain.enums.Status;
 import zg.acelera.dto.TaskDTO;
+import zg.acelera.dto.TaskUpdateDTO;
 import zg.acelera.repository.TaskRepository;
 
 import java.io.IOException;
@@ -29,6 +30,25 @@ public class TaskService {
             return taskRepository.save(task);
         } catch (IOException e) {
             throw new RuntimeException("Error creating task: " + e.getMessage(), e);
+        }
+    }
+
+    public Task updateTask(String taskName, TaskUpdateDTO dto) {
+        if (taskName == null || taskName.trim().isEmpty()) {
+            throw new IllegalArgumentException("Task name cannot be null or empty.");
+        }
+
+        try {
+            Task existingTask = findTaskByName(taskName);
+            dto.update(existingTask);
+            Task updatedTask = taskRepository.update(taskName, existingTask);
+
+            if (updatedTask != null)
+                return updatedTask;
+            else
+                throw new RuntimeException("Task not found with name: " + taskName);
+        } catch (IOException e) {
+            throw new RuntimeException("Error updating task: " + e.getMessage(), e);
         }
     }
 

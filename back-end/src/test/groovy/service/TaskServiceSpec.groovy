@@ -7,6 +7,7 @@ import zg.acelera.domain.Category
 import zg.acelera.domain.Task
 import zg.acelera.domain.enums.Status
 import zg.acelera.dto.TaskDTO
+import zg.acelera.dto.TaskUpdateDTO
 import zg.acelera.repository.TaskRepository
 import zg.acelera.service.TaskService
 
@@ -17,6 +18,7 @@ class TaskServiceSpec extends Specification{
     TaskService taskService
     TaskRepository taskRepository
     TaskDTO createDTO
+    TaskUpdateDTO updateTask
 
     @Shared
     LocalDateTime startDate = LocalDateTime.now()
@@ -67,6 +69,16 @@ class TaskServiceSpec extends Specification{
                 .startDate(startDate)
                 .endDate(endDate)
                 .category("ACZG")
+                .build()
+
+        updateTask = TaskUpdateDTO.builder()
+                .name("Updated Task")
+                .description("Updated description")
+                .priority(2)
+                .status("DOING")
+                .startDate(LocalDateTime.now())
+                .endDate(LocalDateTime.now().plusDays(1))
+                .category("Updated Category")
                 .build()
     }
 
@@ -226,6 +238,68 @@ class TaskServiceSpec extends Specification{
         taskService.countTasksByStatus()
 
         then: "service should throw a RuntimeException"
+        RuntimeException e = thrown(RuntimeException)
+        e.getCause() instanceof IOException
+    }
+
+    def "updateTask should update a task when it exists"() {
+        given: "a existing task's name and an existing task"
+        String existingTaskName = "Test Task"
+
+        when: "updateTask is called with the existing task name and the new task"
+        Task result = taskService.updateTask(existingTaskName, updateTask)
+
+        then: "repository is queried and updated with correct fields"
+        1 * taskRepository.findAll() >> [task]
+        1 * taskRepository.update(existingTaskName, { Task savedTask ->
+            savedTask.name == "Updated Task" &&
+                    savedTask.description == "Updated description" &&
+                    savedTask.priority == 2 &&
+                    savedTask.status == Status.DOING
+        }) >> task
+
+        result != null
+        result.name == "Updated Task"
+    }
+
+    def "updateTask should throw an exception when the task name is null or empty"() {
+        given: "a null existing task name and a new task"
+        String existingTaskName = taskName
+
+        when: "updateTask is called with a null existing task name and the new task"
+        taskService.updateTask(existingTaskName, updateTask)
+
+        then: "service should throw a RuntimeException"
+        RuntimeException e = thrown(RuntimeException)
+        e.getMessage() == "Task name cannot be null or empty."
+
+        where:
+        taskName << [null, "", "  "]
+    }
+
+    def "updateTask should throw an exception when the repository return null"() {
+        given: "a non-existent task name and a new task"
+        String nonExistingTaskName = "Non-existent Task"
+
+        when: "updateTask is called with a non-existent task name and the new task"
+        taskService.updateTask(nonExistingTaskName, updateTask)
+
+        then: "service should throw a RuntimeException"
+        1 * taskRepository.findAll() >> [task]
+        1 * taskRepository.update(nonExistingTaskName, _ ) >> null
+        RuntimeException e = thrown(RuntimeException)
+        e.getMessage() == "Task not found with name: " + nonExistingTaskName
+    }
+
+    def "updateTask should throw an exception when the repository method throw IOException"() {
+        given: "a existing task's name and a new task"
+        String existingTaskName = "Test Task"
+        when: "updateTask is called with the existing task name and the new task"
+        taskService.updateTask(existingTaskName, updateTask)
+
+        then: "service should throw a RuntimeException"
+        1 * taskRepository.findAll() >> [task]
+        1 * taskRepository.update(existingTaskName, _ ) >> { throw new IOException() }
         RuntimeException e = thrown(RuntimeException)
         e.getCause() instanceof IOException
     }

@@ -19,6 +19,7 @@ dependencies {
     testImplementation platform('org.spockframework:spock-bom:2.3-groovy-4.0')
     testImplementation 'org.apache.groovy:groovy:4.0.21'
     testImplementation 'org.spockframework:spock-core'
+    testImplementation 'net.bytebuddy:byte-buddy:1.14.13'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     compileOnly 'org.projectlombok:lombok:1.18.32'
     annotationProcessor 'org.projectlombok:lombok:1.18.32'

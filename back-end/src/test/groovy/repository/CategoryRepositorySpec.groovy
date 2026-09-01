@@ -2,7 +2,7 @@ package repository
 
 import spock.lang.Specification
 import spock.lang.TempDir
-import zg.acelera.repository.CategoryRepository
+import zg.acelera.repository.CategoryRepositoryImpl
 import zg.acelera.domain.Category
 
 import java.nio.file.Files
@@ -11,13 +11,13 @@ import java.nio.file.Path
 class CategoryRepositorySpec extends Specification {
     @TempDir
     Path tempDir
-    CategoryRepository repository
+    CategoryRepositoryImpl repository
     Path filePath
     List<String> lines
 
     def setup() {
         filePath = tempDir.resolve("categories_test.json")
-        repository = new CategoryRepository(filePath)
+        repository = new CategoryRepositoryImpl(filePath)
         lines = List.of("Category 1", "Category 2", "Category 3")
     }
 

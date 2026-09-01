@@ -12,7 +12,6 @@ import java.util.List;
 
 @RequiredArgsConstructor
 public class TaskService {
-
     private final TaskRepository taskRepository;
 
     public Task createTask(TaskDTO dto) {
@@ -42,7 +41,11 @@ public class TaskService {
     }
 
     public List<Task> listTasksByCategory(String category) {
-        return taskRepository.findByCategory(category);
+        try {
+            return taskRepository.findByCategory(category);
+        } catch (IOException e) {
+            throw new RuntimeException("Error fetching tasks by category: " + e.getMessage(), e);
+        }
     }
 
     public List<Task> listTasksOrderedByPriority() {

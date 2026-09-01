@@ -68,15 +68,10 @@ public class TaskRepositoryImpl implements TaskRepository {
     }
 
     @Override
-    public List<Task> findByCategory(String category) {
-        try {
-            return findAll().stream()
-                    .filter(task -> task.getCategory().getName().equalsIgnoreCase(category))
-                    .toList();
-        } catch (IOException e) {
-            System.err.println("Error reading tasks by category: " + e.getMessage());
-            return List.of();
-        }
+    public List<Task> findByCategory(String category) throws IOException {
+        return findAll().stream()
+                .filter(task -> task.getCategory().getName().equalsIgnoreCase(category))
+                .toList();
     }
 
     @Override

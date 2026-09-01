@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface TaskRepository {
     List<Task> findAll() throws IOException;
-    List<Task> findByCategory(String category);
+    List<Task> findByCategory(String category) throws IOException;
     List<Task> findOrderedByPriority() throws IOException;
     List<Task> findByStatus(String status) throws IOException;
     Task save(Task task) throws IOException;

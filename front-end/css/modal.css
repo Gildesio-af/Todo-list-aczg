@@ -1,0 +1,22 @@
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 16px;
+
+    & p {
+        margin-top: 4px;
+        opacity: 0.8;
+    }
+}
+
+.modal-footer {
+    margin-top: 24px;
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+
+    & button:first-child {
+        margin-left: auto;
+    }
+}

@@ -10,7 +10,6 @@ let currentViewingTask = null;
 const formTask = document.getElementById('createTaskForm');
 const modal = document.getElementById('taskModal');
 const detailsModal = document.getElementById('taskDetailsModal');
-const taskNameInput = document.getElementById('taskName');
 const searchInput = document.getElementById('search-input');
 const sidebarItems = document.querySelectorAll('aside ul li[data-filter]');
 
@@ -66,18 +65,6 @@ document.getElementById('closeDetailsBtn').addEventListener('click', closeDetail
 
 modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 detailsModal.addEventListener('click', (e) => { if (e.target === detailsModal) closeDetailsModal(); });
-
-taskNameInput.addEventListener('input', (e) => {
-    const value = e.target.value.trim();
-    if (!value) {
-        currentEditingTaskId = null;
-        UI.updateModalUI(false);
-        return;
-    }
-    const existingTask = Storage.getTaskByName(value);
-    if (existingTask) populateFormForEdit(existingTask);
-    else { currentEditingTaskId = null; UI.updateModalUI(false); }
-});
 
 sidebarItems.forEach(item => {
     item.addEventListener('click', () => {

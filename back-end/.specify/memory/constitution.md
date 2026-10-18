@@ -1,11 +1,9 @@
 <!--
 Sync Impact Report
-- Version change: unversioned template → 1.0.0
-- Modified principles: PRINCIPLE_1_NAME → I. Existing Folder Architecture;
-  PRINCIPLE_2_NAME → II. Boundary Input Validation; PRINCIPLE_3_NAME →
-  III. Test-First Delivery; PRINCIPLE_4_NAME → IV. Standardized Error Handling;
-  PRINCIPLE_5_NAME → V. Strict Typing and Layered Contracts
-- Added sections: Technical Constraints; Development Workflow and Quality Gates
+- Version change: 1.0.0 → 1.1.0
+- Modified principles: none
+- Added sections: Application Overview; Stack and Structure; Execution and Testing;
+  Conventions; Scope Restrictions
 - Removed sections: none
 - Follow-up TODOs: confirm the original ratification date
 -->
@@ -60,6 +58,86 @@ existing source layout under `src/main/java` and automated tests under
 file operations unless a separately approved amendment changes that constraint.
 Lombok MAY reduce boilerplate only when it preserves clear, typed contracts.
 
+### Application Overview
+
+The application is a command-line TODO manager. It currently supports creating,
+listing, updating, and removing users, tasks, and categories through interactive
+menus. Tasks use the domain status model and are persisted locally in files so
+data survives separate executions. The `Main` entry point initializes the CLI
+flow; menus provide interaction, controllers coordinate requests, services
+apply business rules, and repositories handle persistence.
+
+### Stack and Structure
+
+The implementation MUST use Java with the existing Gradle build and the
+`zg.acelera` package namespace. The supported stack is Java 17 or newer,
+Gradle Wrapper, the `application` plugin, Java NIO for file operations, and
+Lombok only where it does not obscure the contract. Automated tests use Groovy
+and Spock through Gradle.
+
+The established structure is:
+
+- `app`: interactive menus and application flow.
+- `controller`: request coordination at the application boundary.
+- `service`: use cases and business rules.
+- `repository`: persistence contracts and implementations.
+- `domain`: entities and enums.
+- `dto`: input and update data-transfer contracts.
+- `util`: interfaces and domain-specific exceptions.
+- `src/test`: controller, service, and repository specifications.
+
+New code MUST follow these responsibilities instead of introducing parallel
+layers or moving existing classes without an approved architectural amendment.
+
+### Execution and Testing
+
+From the `back-end` directory, the application MUST be buildable with:
+
+```text
+./gradlew build
+```
+
+The interactive CLI MUST be started with:
+
+```text
+./gradlew run --console=plain -q
+```
+
+The automated test suite MUST be executed with:
+
+```text
+./gradlew test
+```
+
+Windows users MAY use `gradlew.bat` with the same Gradle tasks. Changes MUST
+pass compilation and the relevant test task before review; `build` is the
+required release-quality verification.
+
+### Conventions
+
+Java packages MUST use lowercase names and remain under `zg.acelera`.
+Classes MUST use PascalCase, methods and variables camelCase, and constants
+UPPER_SNAKE_CASE. Interfaces MUST express contracts, implementations MUST
+make their role explicit through the existing naming pattern, and DTOs MUST
+remain distinct from domain entities. Tests MUST use Spock specification naming
+and be placed in the package-oriented `controller`, `service`, or `repository`
+directories under `src/test`.
+
+Code MUST prefer small methods, explicit types, immutable values where
+practical, and existing project abstractions over duplicate helpers. Public
+behavior MUST be documented through tests rather than comments that merely
+repeat the implementation.
+
+### Scope Restrictions
+
+An agent MUST NOT change existing functionality, persistence formats, package
+boundaries, build dependencies, or user-visible CLI behavior outside the
+requested feature scope without explicit approval. It MUST NOT modify the
+front-end while working on the back-end constitution or back-end features.
+Destructive data changes, migrations, dependency upgrades, and architectural
+reorganization require a separate request or a documented constitution
+amendment. Unrelated worktree changes MUST remain untouched.
+
 ## Development Workflow and Quality Gates
 
 Every change MUST begin with a focused test plan and corresponding automated
@@ -81,4 +159,4 @@ and PATCH for clarifications that do not change obligations. Compliance MUST be
 reviewed during every change review and at least once per release; violations
 require either correction before merge or an explicitly documented amendment.
 
-**Version**: 1.0.0 | **Ratified**: TODO(RATIFICATION_DATE): confirm original adoption date | **Last Amended**: 2026-10-17
+**Version**: 1.1.0 | **Ratified**: TODO(RATIFICATION_DATE): confirm original adoption date | **Last Amended**: 2026-10-17

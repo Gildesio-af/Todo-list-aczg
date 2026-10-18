@@ -19,9 +19,9 @@ implemented and validated independently.
 **Purpose**: Establish the feature files and test seams without changing
 existing task behavior.
 
-- [ ] T001 [P] Add alarm feature source and test package placeholders under `src/main/java/zg/acelera/{domain,dto,repository,service,controller,util}` and `src/test/groovy/{repository,service,controller}`
-- [ ] T002 [P] Add the dedicated `alarms.csv` path configuration seam without changing existing task, user, or category file paths in `src/main/java/zg/acelera/repository`
-- [ ] T003 [P] Record the alarm-focused Gradle test selectors and build commands in `docs/quickstart.md`
+- [X] T001 [P] Add alarm feature source and test package placeholders under `src/main/java/zg/acelera/{domain,dto,repository,service,controller,util}` and `src/test/groovy/{repository,service,controller}`
+- [X] T002 [P] Add the dedicated `alarms.csv` path configuration seam without changing existing task, user, or category file paths in `src/main/java/zg/acelera/repository`
+- [X] T003 [P] Record the alarm-focused Gradle test selectors and build commands in `docs/quickstart.md`
 
 ---
 
@@ -33,10 +33,10 @@ alarm stories.
 **⚠️ CRITICAL**: No user story implementation should begin until this phase is
 complete.
 
-- [ ] T004 [P] Define the typed alarm persistence failure exception preserving the original `IOException` or parsing cause in `src/main/java/zg/acelera/util/exception/AlarmPersistenceException.java`
-- [ ] T005 [P] Define the typed console notification contract receiving task identity, alarm identity, and trigger instant in `src/main/java/zg/acelera/util/AlarmNotifier.java`
-- [ ] T006 [P] Add alarm test fixtures for valid TODO/DOING/DONE tasks, fixed `Clock` values, and temporary CSV paths in `src/test/groovy/service/AlarmFixtures.groovy`
-- [ ] T007 Define the repository and service-facing alarm state types needed by the data model, including `id`, `taskId`, `advanceMinutes`, `triggerAt`, `primary`, `fired`, `lastFiredAt`, and `nextTriggerAt`, in `src/main/java/zg/acelera/domain/Alarm.java`
+- [X] T004 [P] Define the typed alarm persistence failure exception preserving the original `IOException` or parsing cause in `src/main/java/zg/acelera/util/exception/AlarmPersistenceException.java`
+- [X] T005 [P] Define the typed console notification contract receiving task identity, alarm identity, and trigger instant in `src/main/java/zg/acelera/util/AlarmNotifier.java`
+- [X] T006 [P] Add alarm test fixtures for valid TODO/DOING/DONE tasks, fixed `Clock` values, and temporary CSV paths in `src/test/groovy/service/AlarmFixtures.groovy`
+- [X] T007 Define the repository and service-facing alarm state types needed by the data model, including `id`, `taskId`, `advanceMinutes`, `triggerAt`, `primary`, `fired`, `lastFiredAt`, and `nextTriggerAt`, in `src/main/java/zg/acelera/domain/Alarm.java`
 
 **Checkpoint**: Shared types, exception behavior, and deterministic test seams
 are ready; user story increments can now be delivered.

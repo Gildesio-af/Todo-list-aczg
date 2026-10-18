@@ -6,6 +6,18 @@
 - Repository root at `back-end`
 - Gradle Wrapper available as `./gradlew`
 
+## Phase 1 setup
+
+The alarm feature uses the existing `zg.acelera` source and test package
+structure. Its persistence path is isolated in `AlarmStoragePath` and defaults
+to `alarms.csv`; existing task, user, and category file paths are unchanged.
+
+To compile the current setup and confirm the Gradle test task is available:
+
+```text
+./gradlew classes testClasses
+```
+
 ## Automated validation
 
 Run the focused feature tests after implementing the plan:

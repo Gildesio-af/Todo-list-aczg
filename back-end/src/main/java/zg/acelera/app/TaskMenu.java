@@ -99,24 +99,20 @@ public class TaskMenu {
                 Integer hours = taskInterface.readInteger();
                 taskInterface.showMessage("Advance minutes:");
                 Integer minutes = taskInterface.readInteger();
-                try {
-                    alarmController.createAlarm(new AlarmDTO(task, hours, minutes));
-                } catch (RuntimeException e) {
-                    taskInterface.showMessage("Error creating alarm: " + e.getMessage());
-                }
+                AlarmDTO dto = readAlarmDTO("creating", task, hours, minutes);
+                if (dto != null) alarmController.createAlarm(dto);
             }
             case 2 -> {
                 taskInterface.showMessage("Alarm id:");
                 String id = taskInterface.readText();
                 taskInterface.showMessage("Task name:");
                 String task = taskInterface.readText();
+                taskInterface.showMessage("Advance hours:");
                 Integer hours = taskInterface.readInteger();
+                taskInterface.showMessage("Advance minutes:");
                 Integer minutes = taskInterface.readInteger();
-                try {
-                    alarmController.updateAlarm(id, new AlarmDTO(task, hours, minutes));
-                } catch (RuntimeException e) {
-                    taskInterface.showMessage("Error updating alarm: " + e.getMessage());
-                }
+                AlarmDTO dto = readAlarmDTO("updating", task, hours, minutes);
+                if (dto != null) alarmController.updateAlarm(id, dto);
             }
             case 3 -> {
                 taskInterface.showMessage("Task name:");
@@ -127,6 +123,19 @@ public class TaskMenu {
                 alarmController.removeAlarm(taskInterface.readText());
             }
             default -> taskInterface.showMessage("Invalid alarm option.");
+        }
+    }
+
+    private AlarmDTO readAlarmDTO(String operation, String task, Integer hours, Integer minutes) {
+        if (hours == null || minutes == null) {
+            taskInterface.showMessage("Invalid alarm input.");
+            return null;
+        }
+        try {
+            return new AlarmDTO(task, hours, minutes);
+        } catch (RuntimeException e) {
+            taskInterface.showMessage("Error " + operation + " alarm: " + e.getMessage());
+            return null;
         }
     }
 

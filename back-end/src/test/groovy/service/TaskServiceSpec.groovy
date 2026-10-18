@@ -338,4 +338,69 @@ class TaskServiceSpec extends Specification{
         then: "the result should be false"
         !result
     }
+
+    def "updateTask should recalculate alarms after a task end time changes"() {
+        given:
+        def alarmService = Mock(zg.acelera.service.AlarmService, constructorArgs: [null, null])
+        def service = new TaskService(taskRepository, alarmService)
+        def updatedTask = new Task("Test Task", "Updated", 1, Status.TODO, startDate, endDate.plusHours(1), category)
+        def dto = TaskUpdateDTO.builder().endDate(endDate.plusHours(1)).build()
+
+        when:
+        service.updateTask("Test Task", dto)
+
+        then:
+        1 * taskRepository.findAll() >> [task]
+        1 * taskRepository.update("Test Task", _) >> updatedTask
+        1 * alarmService.recalculateForTask({ it.name == "Test Task" && it.endDate == endDate.plusHours(1) })
+    }
+
+    def "renaming a task preserves its alarm association through the alarm service"() {
+        given:
+        def alarmService = Mock(zg.acelera.service.AlarmService, constructorArgs: [null, null])
+        def service = new TaskService(taskRepository, alarmService)
+        def renamedTask = new Task("Renamed Task", task.description, task.priority, task.status,
+                task.startDate, task.endDate, task.category)
+        def dto = TaskUpdateDTO.builder().name("Renamed Task").build()
+
+        when:
+        service.updateTask("Test Task", dto)
+
+        then:
+        1 * taskRepository.findAll() >> [task]
+        1 * taskRepository.update("Test Task", _) >> renamedTask
+        1 * alarmService.renameTaskAlarms("Test Task", renamedTask)
+        0 * alarmService.recalculateForTask(_)
+    }
+
+    def "failed task update does not invoke alarm lifecycle changes"() {
+        given:
+        def alarmService = Mock(zg.acelera.service.AlarmService, constructorArgs: [null, null])
+        def service = new TaskService(taskRepository, alarmService)
+        def dto = TaskUpdateDTO.builder().endDate(endDate.plusHours(1)).build()
+
+        when:
+        service.updateTask("Test Task", dto)
+
+        then:
+        1 * taskRepository.findAll() >> [task]
+        1 * taskRepository.update("Test Task", _) >> null
+        thrown(RuntimeException)
+        0 * alarmService._
+    }
+
+    def "deleting a task cascades to its alarms after task deletion"() {
+        given:
+        def alarmService = Mock(zg.acelera.service.AlarmService, constructorArgs: [null, null])
+        def service = new TaskService(taskRepository, alarmService)
+
+        when:
+        def deleted = service.deleteTask("Test Task")
+
+        then:
+        1 * taskRepository.findAll() >> [task]
+        1 * taskRepository.delete(task) >> true
+        1 * alarmService.deleteByTask("Test Task")
+        deleted
+    }
 }

@@ -302,20 +302,20 @@ implementation and tests. Complete these tasks in order unless marked `[P]`.
 
 ### 7.5 Task lifecycle and CLI integration coverage
 
-- [ ] T048 [P] Add controller specifications in
+- [X] T048 [P] Add controller specifications in
   `src/test/groovy/controller/AlarmControllerSpec.groovy` for create, edit,
   list, remove, task-not-found, limit, and persistence-error messages.
-- [ ] T049 [P] Add task lifecycle specifications to
+- [X] T049 [P] Add task lifecycle specifications to
   `src/test/groovy/service/TaskServiceSpec.groovy` and
   `src/test/groovy/controller/TaskControllerSpec.groovy` proving task edits
   preserve alarms, changed end times recalculate valid triggers, invalid edits
   do not corrupt alarms, renamed tasks preserve association, and deletion
   cascades through `deleteByTask`.
-- [ ] T050 [P] Add menu/integration specifications in
+- [X] T050 [P] Add menu/integration specifications in
   `src/test/groovy/controller/TaskMenuSpec.groovy` for alarm CRUD input flows
   while proving filters, priority ordering, dashboard output, and existing
   task error messages remain unchanged.
-- [ ] T051 Review `src/main/java/zg/acelera/app/TaskMenu.java` and
+- [X] T051 Review `src/main/java/zg/acelera/app/TaskMenu.java` and
   `src/main/java/zg/acelera/controller/AlarmController.java`; ensure parsing
   errors are reported once through the standard interface and no partial DTO
   reaches the service.

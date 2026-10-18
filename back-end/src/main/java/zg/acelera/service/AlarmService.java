@@ -14,6 +14,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Set;
 import java.util.List;
 import java.util.UUID;
 
@@ -146,7 +147,8 @@ public class AlarmService {
     }
 
     private void persistGroup(List<Alarm> group, Alarm old) {
-        List<Alarm> before = new ArrayList<>(alarmRepository.findByTask(group.get(0).getTaskId()));
+        List<Alarm> before = alarmRepository.findByTask(group.get(0).getTaskId()).stream()
+                .map(this::copyAlarm).collect(java.util.stream.Collectors.toCollection(ArrayList::new));
         try {
             for (Alarm alarm : group) {
                 if (old != null && alarm.getId().equals(old.getId())) alarmRepository.update(alarm);
@@ -154,10 +156,36 @@ public class AlarmService {
                 else alarmRepository.update(alarm);
             }
         } catch (RuntimeException failure) {
-            for (Alarm alarm : before) {
-                try { alarmRepository.update(alarm); } catch (RuntimeException ignored) { }
-            }
+            restoreGroup(before, group, failure);
             throw failure;
+        }
+    }
+
+    private Alarm copyAlarm(Alarm alarm) {
+        return Alarm.builder().id(alarm.getId()).taskId(alarm.getTaskId())
+                .advanceMinutes(alarm.getAdvanceMinutes()).triggerAt(alarm.getTriggerAt())
+                .primary(alarm.isPrimary()).fired(alarm.isFired())
+                .lastFiredAt(alarm.getLastFiredAt()).nextTriggerAt(alarm.getNextTriggerAt())
+                .build();
+    }
+
+    private void restoreGroup(List<Alarm> before, List<Alarm> attempted, RuntimeException failure) {
+        Set<String> originalIds = before.stream().map(Alarm::getId).collect(java.util.stream.Collectors.toSet());
+        for (Alarm alarm : attempted) {
+            if (originalIds.contains(alarm.getId())) continue;
+            try {
+                alarmRepository.delete(alarm.getId());
+            } catch (RuntimeException rollbackFailure) {
+                failure.addSuppressed(rollbackFailure);
+            }
+        }
+        for (Alarm alarm : before) {
+            try {
+                if (alarmRepository.findById(alarm.getId()) == null) alarmRepository.save(alarm);
+                else alarmRepository.update(alarm);
+            } catch (RuntimeException rollbackFailure) {
+                failure.addSuppressed(rollbackFailure);
+            }
         }
     }
 

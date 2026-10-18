@@ -286,16 +286,16 @@ implementation and tests. Complete these tasks in order unless marked `[P]`.
 
 ### 7.4 Persistence and atomicity hardening
 
-- [ ] T045 [P] Expand repository failure specifications in
+- [X] T045 [P] Expand repository failure specifications in
   `src/test/groovy/repository/AlarmRepositorySpec.groovy` for missing/unreadable
   files, write failures, malformed booleans/integers/timestamps, invalid
   nullable fields, exact field count, and original-cause preservation in
   `AlarmPersistenceException`.
-- [ ] T046 [P] Add service persistence-failure specifications in
+- [X] T046 [P] Add service persistence-failure specifications in
   `src/test/groovy/service/AlarmServiceSpec.groovy` proving failed create/edit
   operations leave valid CSV state unchanged and do not leave partial primary
   recalculation.
-- [ ] T047 Review and harden rollback/error handling in
+- [X] T047 Review and harden rollback/error handling in
   `src/main/java/zg/acelera/service/AlarmService.java` and
   `src/main/java/zg/acelera/repository/AlarmRepositoryImpl.java`; do not
   silently swallow rollback failures, and preserve all persistence causes.

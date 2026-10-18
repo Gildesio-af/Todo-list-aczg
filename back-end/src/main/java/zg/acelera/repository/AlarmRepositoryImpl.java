@@ -6,6 +6,9 @@ import zg.acelera.util.exception.AlarmPersistenceException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,8 +65,8 @@ public class AlarmRepositoryImpl implements AlarmRepository {
                     .taskId(required(fields[1], "taskId"))
                     .advanceMinutes(Integer.parseInt(fields[2]))
                     .triggerAt(LocalDateTime.parse(fields[3]))
-                    .primary(Boolean.parseBoolean(fields[4]))
-                    .fired(Boolean.parseBoolean(fields[5]))
+                    .primary(parseBoolean(fields[4], "primary"))
+                    .fired(parseBoolean(fields[5], "fired"))
                     .lastFiredAt(parseNullable(fields[6]))
                     .nextTriggerAt(parseNullable(fields[7]))
                     .build();
@@ -79,6 +82,13 @@ public class AlarmRepositoryImpl implements AlarmRepository {
 
     private LocalDateTime parseNullable(String value) {
         return value.isBlank() ? null : LocalDateTime.parse(value);
+    }
+
+    private boolean parseBoolean(String value, String field) {
+        if (!"true".equals(value) && !"false".equals(value)) {
+            throw new IllegalArgumentException("Invalid " + field + " boolean: " + value);
+        }
+        return Boolean.parseBoolean(value);
     }
 
     @Override
@@ -133,11 +143,38 @@ public class AlarmRepositoryImpl implements AlarmRepository {
     }
 
     private void saveAll(List<Alarm> alarms) {
+        Path temporaryPath = null;
         try {
             List<String> lines = alarms.stream().map(this::serialize).toList();
-            Files.write(filePath, lines);
+            Path parent = filePath.toAbsolutePath().getParent();
+            if (parent == null) {
+                throw new IOException("Alarm storage has no parent directory");
+            }
+            temporaryPath = Files.createTempFile(parent, filePath.getFileName().toString(), ".tmp");
+            Files.write(temporaryPath, lines, StandardCharsets.UTF_8,
+                    StandardOpenOption.TRUNCATE_EXISTING);
+            try {
+                Files.move(temporaryPath, filePath, StandardCopyOption.ATOMIC_MOVE,
+                        StandardCopyOption.REPLACE_EXISTING);
+            } catch (java.nio.file.AtomicMoveNotSupportedException e) {
+                Files.move(temporaryPath, filePath, StandardCopyOption.REPLACE_EXISTING);
+            }
         } catch (IOException e) {
+            deleteTemporaryFile(temporaryPath, e);
             throw new AlarmPersistenceException("Unable to write alarm storage", e);
+        } catch (RuntimeException e) {
+            deleteTemporaryFile(temporaryPath, e);
+            if (e instanceof AlarmPersistenceException alarmException) throw alarmException;
+            throw new AlarmPersistenceException("Unable to serialize alarm storage", e);
+        }
+    }
+
+    private void deleteTemporaryFile(Path temporaryPath, Throwable failure) {
+        if (temporaryPath == null) return;
+        try {
+            Files.deleteIfExists(temporaryPath);
+        } catch (IOException cleanupFailure) {
+            failure.addSuppressed(cleanupFailure);
         }
     }
 

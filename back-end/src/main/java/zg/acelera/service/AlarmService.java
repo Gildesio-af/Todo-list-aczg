@@ -22,6 +22,7 @@ public class AlarmService {
     private final TaskRepository taskRepository;
     private final Clock clock;
     private final AlarmNotifier notifier;
+    private AlarmMonitor monitor;
 
     public AlarmService(AlarmRepository alarmRepository, TaskRepository taskRepository) {
         this(alarmRepository, taskRepository, Clock.systemDefaultZone(), (taskId, alarmId, triggerAt) ->
@@ -34,6 +35,10 @@ public class AlarmService {
         this.taskRepository = taskRepository;
         this.clock = clock;
         this.notifier = notifier;
+    }
+
+    public void attachMonitor(AlarmMonitor monitor) {
+        this.monitor = monitor;
     }
 
     public Alarm createAlarm(AlarmDTO dto) {
@@ -51,6 +56,7 @@ public class AlarmService {
         existing.add(alarm);
         refreshPrimary(existing);
         persistGroup(existing, null);
+        startMonitor();
         return alarmRepository.findById(alarm.getId());
     }
 
@@ -68,6 +74,7 @@ public class AlarmService {
         group.add(replacement);
         refreshPrimary(group);
         persistGroup(group, current);
+        updateMonitorState();
         return replacement;
     }
 
@@ -78,11 +85,15 @@ public class AlarmService {
 
     public boolean removeAlarm(String alarmId) {
         requireAlarm(alarmId);
-        return alarmRepository.delete(alarmId);
+        boolean removed = alarmRepository.delete(alarmId);
+        updateMonitorState();
+        return removed;
     }
 
     public int deleteByTask(String taskId) {
-        return alarmRepository.deleteByTask(taskId);
+        int deleted = alarmRepository.deleteByTask(taskId);
+        updateMonitorState();
+        return deleted;
     }
 
     public void renameTaskAlarms(String oldTaskId, Task task) {
@@ -105,6 +116,7 @@ public class AlarmService {
         }
         refreshPrimary(replacements);
         for (Alarm alarm : replacements) alarmRepository.update(alarm);
+        updateMonitorState();
     }
 
     public void checkDueAlarms() {
@@ -188,5 +200,15 @@ public class AlarmService {
         Alarm alarm = alarmRepository.findById(id);
         if (alarm == null) throw new IllegalArgumentException("Alarm not found: " + id);
         return alarm;
+    }
+
+    private void startMonitor() {
+        if (monitor != null) monitor.start();
+    }
+
+    private void updateMonitorState() {
+        if (monitor == null) return;
+        if (hasMonitorableAlarms()) monitor.start();
+        else monitor.stop();
     }
 }

@@ -265,19 +265,19 @@ implementation and tests. Complete these tasks in order unless marked `[P]`.
 
 ### 7.3 Monitor lifecycle and scheduler contract
 
-- [ ] T041 [P] Add monitor lifecycle specifications in
+- [X] T041 [P] Add monitor lifecycle specifications in
   `src/test/groovy/service/AlarmMonitorSpec.groovy` using an injected
   scheduler to prove one-minute `scheduleAtFixedRate`, no duplicate task from
   repeated `start()`, and cancellation from `stop()`.
-- [ ] T042 [P] Add timing/failure-isolation specifications in
+- [X] T042 [P] Add timing/failure-isolation specifications in
   `src/test/groovy/service/AlarmMonitorSpec.groovy` for up-to-59-second polling
   lateness, failed polls that do not cancel future checks, idle shutdown, and
   clean `close()`.
-- [ ] T043 Resolve the injected-clock contract in
+- [X] T043 Resolve the injected-clock contract in
   `src/main/java/zg/acelera/service/AlarmMonitor.java`: use it for timing or
   remove it from the constructor and update callers/tests. The final API must
   be deterministic and justified by passing lifecycle tests.
-- [ ] T044 Wire monitor start/stop behavior to alarm lifecycle operations in
+- [X] T044 Wire monitor start/stop behavior to alarm lifecycle operations in
   `src/main/java/zg/acelera/Main.java`,
   `src/main/java/zg/acelera/controller/AlarmController.java`, and
   `src/main/java/zg/acelera/service/AlarmService.java`; prove creation starts

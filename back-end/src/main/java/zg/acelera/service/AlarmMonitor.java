@@ -1,6 +1,5 @@
 package zg.acelera.service;
 
-import java.time.Clock;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -8,18 +7,16 @@ import java.util.concurrent.TimeUnit;
 public class AlarmMonitor implements AutoCloseable {
     private final AlarmService alarmService;
     private final ScheduledExecutorService scheduler;
-    private final Clock clock;
     private ScheduledFuture<?> scheduledCheck;
 
-    public AlarmMonitor(AlarmService alarmService, ScheduledExecutorService scheduler, Clock clock) {
+    public AlarmMonitor(AlarmService alarmService, ScheduledExecutorService scheduler) {
         this.alarmService = alarmService;
         this.scheduler = scheduler;
-        this.clock = clock;
     }
 
     public synchronized void start() {
         if (scheduledCheck != null && !scheduledCheck.isCancelled() && !scheduledCheck.isDone()) return;
-        scheduledCheck = scheduler.scheduleAtFixedRate(this::safeCheck, 0, 1, TimeUnit.MINUTES);
+        scheduledCheck = scheduler.scheduleAtFixedRate(this::safeCheck, 0L, 1L, TimeUnit.MINUTES);
     }
 
     public synchronized void stop() {
@@ -37,8 +34,8 @@ public class AlarmMonitor implements AutoCloseable {
         try {
             alarmService.checkDueAlarms();
             if (!alarmService.hasMonitorableAlarms()) stop();
-        } catch (RuntimeException ignored) {
-            // A failed poll must not cancel subsequent scheduled checks.
+        } catch (RuntimeException failure) {
+            System.err.printf("Alarm monitor poll failed: %s%n", failure.getMessage());
         }
     }
 

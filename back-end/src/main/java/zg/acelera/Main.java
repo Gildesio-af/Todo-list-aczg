@@ -40,7 +40,6 @@ public class Main {
 
 
         ApplicationContext context = getMainMenu(userInterface, taskInterface, userMenu);
-        context.monitor().start();
         try {
             context.menu().start();
         } finally {
@@ -59,9 +58,9 @@ public class Main {
         TaskRepositoryImpl taskRepository = new TaskRepositoryImpl();
         AlarmService alarmService = new AlarmService(new AlarmRepositoryImpl(), taskRepository,
                 Clock.systemDefaultZone(), new ConsoleAlarmNotifier());
-        AlarmMonitor monitor = new AlarmMonitor(alarmService, Executors.newSingleThreadScheduledExecutor(),
-                Clock.systemDefaultZone());
-        AlarmController alarmController = new AlarmController(alarmService, taskInterface);
+        AlarmMonitor monitor = new AlarmMonitor(alarmService, Executors.newSingleThreadScheduledExecutor());
+        alarmService.attachMonitor(monitor);
+        AlarmController alarmController = new AlarmController(alarmService, taskInterface, monitor);
         TaskService taskService = new TaskService(taskRepository, alarmService);
         TaskController tasksController = new TaskController(taskService, taskInterface);
         TaskMenu taskMenu = new TaskMenu(tasksController, taskInterface, categoryMenu, alarmController);

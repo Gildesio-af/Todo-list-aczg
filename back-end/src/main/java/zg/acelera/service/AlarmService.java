@@ -112,15 +112,16 @@ public class AlarmService {
         for (Alarm alarm : alarmRepository.findAll()) {
             Task task = findTask(alarm.getTaskId());
             if (task == null || task.getStatus() == Status.DONE) continue;
-            LocalDateTime dueAt = alarm.getNextTriggerAt() == null ? alarm.getTriggerAt() : alarm.getNextTriggerAt();
+            if (alarm.isFired() && alarm.getNextTriggerAt() == null) continue;
+            LocalDateTime dueAt = alarm.isFired() ? alarm.getNextTriggerAt() : alarm.getTriggerAt();
             if (dueAt == null || now.isBefore(dueAt)) continue;
             Alarm updated = Alarm.builder().id(alarm.getId()).taskId(alarm.getTaskId())
                     .advanceMinutes(alarm.getAdvanceMinutes()).triggerAt(alarm.getTriggerAt())
                     .primary(alarm.isPrimary()).fired(true).lastFiredAt(dueAt)
                     .nextTriggerAt(alarm.isPrimary() ? dueAt.plusMinutes(alarm.getAdvanceMinutes()) : null)
                     .build();
-            notifier.notifyAlarm(alarm.getTaskId(), alarm.getId(), dueAt);
             alarmRepository.update(updated);
+            notifier.notifyAlarm(alarm.getTaskId(), alarm.getId(), dueAt);
         }
     }
 

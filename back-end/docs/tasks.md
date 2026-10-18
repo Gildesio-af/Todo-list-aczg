@@ -225,3 +225,115 @@ Task T023: Console notifier in src/main/java/zg/acelera/util/ConsoleAlarmNotifie
 - **US3**: CLI CRUD operations show standardized outcomes; task edits preserve
   or recalculate alarm state, task deletion cascades, and existing filters,
   ordering, dashboard, and task behavior remain unchanged.
+
+---
+
+## Phase 7: Completion Gaps and Behavioral Hardening
+
+**Purpose**: Complete the acceptance criteria not yet covered by the current
+implementation and tests. Complete these tasks in order unless marked `[P]`.
+
+### 7.1 Dispatch correctness
+
+- [X] T035 [P] Add one-shot dispatch specifications in
+  `src/test/groovy/service/AlarmDispatchSpec.groovy` covering due TODO/DOING
+  alarms, notification arguments, persisted `fired`/`lastFiredAt`, and future
+  triggers that must not notify.
+- [X] T036 [P] Add deduplication and DONE-silence specifications in
+  `src/test/groovy/service/AlarmDispatchSpec.groovy` proving that a one-shot
+  alarm is not emitted twice for the same persisted trigger, a `DONE` task
+  never emits, and restart with the same CSV state does not re-emit it.
+- [X] T037 Fix one-shot dispatch state handling in
+  `src/main/java/zg/acelera/service/AlarmService.java` so `fired=true` with no
+  `nextTriggerAt` cannot dispatch again. Define and test notification versus
+  persistence failure behavior.
+
+### 7.2 Primary repetition and trigger reactivation
+
+- [ ] T038 [P] Add primary-only repetition specifications in
+  `src/test/groovy/service/AlarmDispatchSpec.groovy` covering multiple alarms,
+  smallest `advanceMinutes` as primary, no repetition for non-primary alarms,
+  and the exact configured interval for `nextTriggerAt`.
+- [ ] T039 [P] Add task-edit reactivation specifications in
+  `src/test/groovy/service/AlarmDispatchSpec.groovy` proving that a new future
+  trigger resets `fired`, `lastFiredAt`, and `nextTriggerAt`, while preserving
+  the stable alarm id and recalculated `triggerAt`.
+- [ ] T040 Verify and correct repetition/reactivation transitions in
+  `src/main/java/zg/acelera/service/AlarmService.java`; document the interval
+  rule in `docs/data-model.md` and cover every transition with fixed-clock
+  tests.
+
+### 7.3 Monitor lifecycle and scheduler contract
+
+- [ ] T041 [P] Add monitor lifecycle specifications in
+  `src/test/groovy/service/AlarmMonitorSpec.groovy` using an injected
+  scheduler to prove one-minute `scheduleAtFixedRate`, no duplicate task from
+  repeated `start()`, and cancellation from `stop()`.
+- [ ] T042 [P] Add timing/failure-isolation specifications in
+  `src/test/groovy/service/AlarmMonitorSpec.groovy` for up-to-59-second polling
+  lateness, failed polls that do not cancel future checks, idle shutdown, and
+  clean `close()`.
+- [ ] T043 Resolve the injected-clock contract in
+  `src/main/java/zg/acelera/service/AlarmMonitor.java`: use it for timing or
+  remove it from the constructor and update callers/tests. The final API must
+  be deterministic and justified by passing lifecycle tests.
+- [ ] T044 Wire monitor start/stop behavior to alarm lifecycle operations in
+  `src/main/java/zg/acelera/Main.java`,
+  `src/main/java/zg/acelera/controller/AlarmController.java`, and
+  `src/main/java/zg/acelera/service/AlarmService.java`; prove creation starts
+  monitoring, removal of the last monitorable alarm stops it, and shutdown
+  always closes it.
+
+### 7.4 Persistence and atomicity hardening
+
+- [ ] T045 [P] Expand repository failure specifications in
+  `src/test/groovy/repository/AlarmRepositorySpec.groovy` for missing/unreadable
+  files, write failures, malformed booleans/integers/timestamps, invalid
+  nullable fields, exact field count, and original-cause preservation in
+  `AlarmPersistenceException`.
+- [ ] T046 [P] Add service persistence-failure specifications in
+  `src/test/groovy/service/AlarmServiceSpec.groovy` proving failed create/edit
+  operations leave valid CSV state unchanged and do not leave partial primary
+  recalculation.
+- [ ] T047 Review and harden rollback/error handling in
+  `src/main/java/zg/acelera/service/AlarmService.java` and
+  `src/main/java/zg/acelera/repository/AlarmRepositoryImpl.java`; do not
+  silently swallow rollback failures, and preserve all persistence causes.
+
+### 7.5 Task lifecycle and CLI integration coverage
+
+- [ ] T048 [P] Add controller specifications in
+  `src/test/groovy/controller/AlarmControllerSpec.groovy` for create, edit,
+  list, remove, task-not-found, limit, and persistence-error messages.
+- [ ] T049 [P] Add task lifecycle specifications to
+  `src/test/groovy/service/TaskServiceSpec.groovy` and
+  `src/test/groovy/controller/TaskControllerSpec.groovy` proving task edits
+  preserve alarms, changed end times recalculate valid triggers, invalid edits
+  do not corrupt alarms, renamed tasks preserve association, and deletion
+  cascades through `deleteByTask`.
+- [ ] T050 [P] Add menu/integration specifications in
+  `src/test/groovy/controller/TaskMenuSpec.groovy` for alarm CRUD input flows
+  while proving filters, priority ordering, dashboard output, and existing
+  task error messages remain unchanged.
+- [ ] T051 Review `src/main/java/zg/acelera/app/TaskMenu.java` and
+  `src/main/java/zg/acelera/controller/AlarmController.java`; ensure parsing
+  errors are reported once through the standard interface and no partial DTO
+  reaches the service.
+
+### 7.6 End-to-end and release acceptance
+
+- [ ] T052 [P] Add an application lifecycle specification in
+  `src/test/groovy/controller/ApplicationLifecycleSpec.groovy` covering
+  collaborator construction and monitor shutdown, or document why `Main.main`
+  cannot be isolated by the current test seam.
+- [ ] T053 Execute `./gradlew test --tests '*Alarm*'` after all new alarm
+  specifications exist; fix every failure before proceeding.
+- [ ] T054 Execute `./gradlew test` and verify task, category, and user
+  behavior remains unchanged.
+- [ ] T055 Execute `./gradlew build` and perform the manual scenario in
+  `docs/quickstart.md`, correcting `docs/quickstart.md` or
+  `docs/contracts/alarm-cli.md` when the observed behavior differs.
+- [ ] T056 Review the final implementation against `docs/spec.md`,
+  `docs/data-model.md`, `docs/contracts/alarm-cli.md`, and this task list;
+  mark Phase 7 complete only when every acceptance criterion has a passing
+  automated test or explicitly documented manual verification.

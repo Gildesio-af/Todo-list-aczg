@@ -52,7 +52,11 @@ FIRED --(valid future trigger after task edit)--> PENDING
 
 Only the primary alarm may transition repeatedly. A due alarm is emitted once
 per persisted trigger instant; the service updates CSV state in the same
-operation. A `DONE` task never emits and never schedules a repeat.
+operation. For a primary alarm, the next trigger is exactly
+`dueAt + advanceMinutes`; non-primary alarms never receive a next trigger. A
+`DONE` task never emits and never schedules a repeat. Recalculating a task with
+a new future trigger preserves the alarm id and clears `fired`, `lastFiredAt`,
+and `nextTriggerAt`, making the alarm pending again.
 
 ## Validation invariants
 

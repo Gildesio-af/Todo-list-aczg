@@ -250,15 +250,15 @@ implementation and tests. Complete these tasks in order unless marked `[P]`.
 
 ### 7.2 Primary repetition and trigger reactivation
 
-- [ ] T038 [P] Add primary-only repetition specifications in
+- [X] T038 [P] Add primary-only repetition specifications in
   `src/test/groovy/service/AlarmDispatchSpec.groovy` covering multiple alarms,
   smallest `advanceMinutes` as primary, no repetition for non-primary alarms,
   and the exact configured interval for `nextTriggerAt`.
-- [ ] T039 [P] Add task-edit reactivation specifications in
+- [X] T039 [P] Add task-edit reactivation specifications in
   `src/test/groovy/service/AlarmDispatchSpec.groovy` proving that a new future
   trigger resets `fired`, `lastFiredAt`, and `nextTriggerAt`, while preserving
   the stable alarm id and recalculated `triggerAt`.
-- [ ] T040 Verify and correct repetition/reactivation transitions in
+- [X] T040 Verify and correct repetition/reactivation transitions in
   `src/main/java/zg/acelera/service/AlarmService.java`; document the interval
   rule in `docs/data-model.md` and cover every transition with fixed-clock
   tests.

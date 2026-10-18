@@ -11,6 +11,9 @@ import zg.acelera.service.AlarmService
 import zg.acelera.util.AlarmNotifier
 
 import java.time.LocalDateTime
+import java.time.Clock
+import java.time.Instant
+import java.time.ZoneOffset
 
 class AlarmDispatchSpec extends Specification {
     def "dispatches due TODO and DOING alarms with their persisted trigger"() {
@@ -124,14 +127,79 @@ class AlarmDispatchSpec extends Specification {
         notifications.empty
     }
 
-    private AlarmService service(AlarmRepository repository, List<Task> tasks, List<List> notifications) {
+    def "repeats only the primary alarm using its configured advance interval"() {
+        given:
+        def task = task("repeating", Status.TODO)
+        def repository = new AlarmRepositoryImpl(AlarmFixtures.temporaryAlarmPath())
+        def notifications = []
+        repository.save(dispatchAlarm("primary", "repeating", 30, LocalDateTime.of(2026, 10, 18, 11, 30), true))
+        repository.save(dispatchAlarm("secondary", "repeating", 60, LocalDateTime.of(2026, 10, 18, 11, 0), false))
+        def alarmService = service(repository, [task], notifications, at("2026-10-18T12:00:00Z"))
+
+        when:
+        alarmService.checkDueAlarms()
+
+        then:
+        notifications == [
+                ["repeating", "primary", LocalDateTime.of(2026, 10, 18, 11, 30)],
+                ["repeating", "secondary", LocalDateTime.of(2026, 10, 18, 11, 0)]
+        ]
+        repository.findById("primary").nextTriggerAt == LocalDateTime.of(2026, 10, 18, 12, 0)
+        repository.findById("secondary").nextTriggerAt == null
+
+        when:
+        alarmService = service(repository, [task], notifications, at("2026-10-18T12:01:00Z"))
+        alarmService.checkDueAlarms()
+
+        then:
+        notifications.count { it[1] == "primary" } == 2
+        notifications.count { it[1] == "secondary" } == 1
+        repository.findById("primary").nextTriggerAt == LocalDateTime.of(2026, 10, 18, 12, 30)
+        repository.findById("secondary").lastFiredAt == LocalDateTime.of(2026, 10, 18, 11, 0)
+    }
+
+    def "reactivates an alarm after task recalculation while preserving its identity"() {
+        given:
+        def originalTask = task("reactivate", Status.TODO)
+        def repository = new AlarmRepositoryImpl(AlarmFixtures.temporaryAlarmPath())
+        def original = Alarm.builder()
+                .id("stable-id").taskId("reactivate").advanceMinutes(30)
+                .triggerAt(LocalDateTime.of(2026, 10, 18, 17, 30))
+                .primary(true).fired(true)
+                .lastFiredAt(LocalDateTime.of(2026, 10, 18, 17, 30))
+                .nextTriggerAt(LocalDateTime.of(2026, 10, 18, 18, 0))
+                .build()
+        repository.save(original)
+        def alarmService = service(repository, [originalTask], [], AlarmFixtures.fixedClock())
+        def editedTask = task("reactivate", Status.TODO)
+        editedTask.endDate = LocalDateTime.of(2026, 10, 19, 18, 0)
+
+        when:
+        alarmService.recalculateForTask(editedTask)
+
+        then:
+        with(repository.findById("stable-id")) {
+            id == "stable-id"
+            triggerAt == LocalDateTime.of(2026, 10, 19, 17, 30)
+            !fired
+            lastFiredAt == null
+            nextTriggerAt == null
+        }
+    }
+
+    private AlarmService service(AlarmRepository repository, List<Task> tasks, List<List> notifications,
+                                Clock clock = AlarmFixtures.fixedClock()) {
         def taskRepository = Stub(TaskRepository) {
             findAll() >> tasks
         }
         AlarmNotifier notifier = { taskId, alarmId, triggerAt ->
             notifications << [taskId, alarmId, triggerAt]
         }
-        new AlarmService(repository, taskRepository, AlarmFixtures.fixedClock(), notifier)
+        new AlarmService(repository, taskRepository, clock, notifier)
+    }
+
+    private static Clock at(String instant) {
+        Clock.fixed(Instant.parse(instant), ZoneOffset.UTC)
     }
 
     private static Task task(String name, Status status) {
@@ -150,6 +218,17 @@ class AlarmDispatchSpec extends Specification {
                 .id(id)
                 .taskId(taskId)
                 .advanceMinutes((int) java.time.Duration.between(triggerAt, LocalDateTime.of(2026, 10, 18, 10, 0)).toMinutes())
+                .triggerAt(triggerAt)
+                .primary(primary)
+                .build()
+    }
+
+    private static Alarm dispatchAlarm(String id, String taskId, int advanceMinutes,
+                                       LocalDateTime triggerAt, boolean primary) {
+        Alarm.builder()
+                .id(id)
+                .taskId(taskId)
+                .advanceMinutes(advanceMinutes)
                 .triggerAt(triggerAt)
                 .primary(primary)
                 .build()

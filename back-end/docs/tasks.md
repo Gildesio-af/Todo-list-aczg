@@ -322,18 +322,18 @@ implementation and tests. Complete these tasks in order unless marked `[P]`.
 
 ### 7.6 End-to-end and release acceptance
 
-- [ ] T052 [P] Add an application lifecycle specification in
+- [X] T052 [P] Add an application lifecycle specification in
   `src/test/groovy/controller/ApplicationLifecycleSpec.groovy` covering
   collaborator construction and monitor shutdown, or document why `Main.main`
   cannot be isolated by the current test seam.
-- [ ] T053 Execute `./gradlew test --tests '*Alarm*'` after all new alarm
+- [X] T053 Execute `./gradlew test --tests '*Alarm*'` after all new alarm
   specifications exist; fix every failure before proceeding.
-- [ ] T054 Execute `./gradlew test` and verify task, category, and user
+- [X] T054 Execute `./gradlew test` and verify task, category, and user
   behavior remains unchanged.
-- [ ] T055 Execute `./gradlew build` and perform the manual scenario in
+- [X] T055 Execute `./gradlew build` and perform the manual scenario in
   `docs/quickstart.md`, correcting `docs/quickstart.md` or
   `docs/contracts/alarm-cli.md` when the observed behavior differs.
-- [ ] T056 Review the final implementation against `docs/spec.md`,
+- [X] T056 Review the final implementation against `docs/spec.md`,
   `docs/data-model.md`, `docs/contracts/alarm-cli.md`, and this task list;
   mark Phase 7 complete only when every acceptance criterion has a passing
   automated test or explicitly documented manual verification.

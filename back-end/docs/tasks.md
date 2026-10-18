@@ -55,19 +55,19 @@ touching the existing task files.
 
 ### Tests for User Story 1
 
-- [ ] T008 [P] [US1] Add DTO validation specifications for missing task identity, non-integer input, negative values, zero advance, and the minimum one-minute advance in `src/test/groovy/service/AlarmDtoSpec.groovy`
-- [ ] T009 [P] [US1] Add repository CSV round-trip and schema specifications for semicolon ordering, ISO-8601 timestamps, nullable timestamps, and malformed field rejection in `src/test/groovy/repository/AlarmRepositorySpec.groovy`
-- [ ] T010 [P] [US1] Add service specifications for trigger calculation, task duration validation, past-trigger rejection, three-alarm limit, and priority-independent calculation in `src/test/groovy/service/AlarmServiceSpec.groovy`
-- [ ] T011 [P] [US1] Add service specifications for edit-state reset, stable alarm identity, list/remove behavior, and preservation of prior state when persistence fails in `src/test/groovy/service/AlarmServiceSpec.groovy`
-- [ ] T012 [P] [US1] Add persistence failure specifications for unreadable, unwritable, and malformed `alarms.csv` records with cause preservation in `src/test/groovy/repository/AlarmRepositorySpec.groovy`
+- [X] T008 [P] [US1] Add DTO validation specifications for missing task identity, non-integer input, negative values, zero advance, and the minimum one-minute advance in `src/test/groovy/service/AlarmDtoSpec.groovy`
+- [X] T009 [P] [US1] Add repository CSV round-trip and schema specifications for semicolon ordering, ISO-8601 timestamps, nullable timestamps, and malformed field rejection in `src/test/groovy/repository/AlarmRepositorySpec.groovy`
+- [X] T010 [P] [US1] Add service specifications for trigger calculation, task duration validation, past-trigger rejection, three-alarm limit, and priority-independent calculation in `src/test/groovy/service/AlarmServiceSpec.groovy`
+- [X] T011 [P] [US1] Add service specifications for edit-state reset, stable alarm identity, list/remove behavior, and preservation of prior state when persistence fails in `src/test/groovy/service/AlarmServiceSpec.groovy`
+- [X] T012 [P] [US1] Add persistence failure specifications for unreadable, unwritable, and malformed `alarms.csv` records with cause preservation in `src/test/groovy/repository/AlarmRepositorySpec.groovy`
 
 ### Implementation for User Story 1
 
-- [ ] T013 [P] [US1] Implement the typed create/update DTO with task identity, integer hours, integer minutes, and boundary validation in `src/main/java/zg/acelera/dto/AlarmDTO.java`
-- [ ] T014 [US1] Define the alarm repository contract for list, save, update, delete, and delete-by-task operations in `src/main/java/zg/acelera/repository/AlarmRepository.java`
-- [ ] T015 [US1] Implement Java NIO semicolon-delimited CSV read/write, exact field-count validation, ISO timestamp parsing, and explicit `AlarmPersistenceException` failures in `src/main/java/zg/acelera/repository/AlarmRepositoryImpl.java`
-- [ ] T016 [US1] Implement alarm construction, task lookup, duration/trigger validation, maximum-three enforcement, primary selection by minimum `advanceMinutes`, and DTO-to-domain mapping in `src/main/java/zg/acelera/service/AlarmService.java`
-- [ ] T017 [US1] Implement alarm create, edit, list, remove, and task-cascade operations with atomic state updates and no partial persistence in `src/main/java/zg/acelera/service/AlarmService.java`
+- [X] T013 [P] [US1] Implement the typed create/update DTO with task identity, integer hours, integer minutes, and boundary validation in `src/main/java/zg/acelera/dto/AlarmDTO.java`
+- [X] T014 [US1] Define the alarm repository contract for list, save, update, delete, and delete-by-task operations in `src/main/java/zg/acelera/repository/AlarmRepository.java`
+- [X] T015 [US1] Implement Java NIO semicolon-delimited CSV read/write, exact field-count validation, ISO timestamp parsing, and explicit `AlarmPersistenceException` failures in `src/main/java/zg/acelera/repository/AlarmRepositoryImpl.java`
+- [X] T016 [US1] Implement alarm construction, task lookup, duration/trigger validation, maximum-three enforcement, primary selection by minimum `advanceMinutes`, and DTO-to-domain mapping in `src/main/java/zg/acelera/service/AlarmService.java`
+- [X] T017 [US1] Implement alarm create, edit, list, remove, and task-cascade operations with atomic state updates and no partial persistence in `src/main/java/zg/acelera/service/AlarmService.java`
 
 **Checkpoint**: User Story 1 is independently usable through service/repository
 calls and all CRUD and persistence acceptance criteria are covered.
@@ -87,15 +87,15 @@ stops when idle, and closes cleanly.
 
 ### Tests for User Story 2
 
-- [ ] T018 [P] [US2] Add service specifications for due-window dispatch, one-shot deduplication, DONE silence, persisted restart state, and closed-application recovery in `src/test/groovy/service/AlarmDispatchSpec.groovy`
-- [ ] T019 [P] [US2] Add service specifications for primary-only repetition, configured-advance intervals, new-trigger reactivation, and persistence of every dispatch transition in `src/test/groovy/service/AlarmDispatchSpec.groovy`
-- [ ] T020 [P] [US2] Add monitor lifecycle specifications for one-minute fixed-rate scheduling, up-to-59-second lateness, no duplicate scheduler task, idle stop, and controlled shutdown in `src/test/groovy/service/AlarmMonitorSpec.groovy`
+- [X] T018 [P] [US2] Add service specifications for due-window dispatch, one-shot deduplication, DONE silence, persisted restart state, and closed-application recovery in `src/test/groovy/service/AlarmDispatchSpec.groovy`
+- [X] T019 [P] [US2] Add service specifications for primary-only repetition, configured-advance intervals, new-trigger reactivation, and persistence of every dispatch transition in `src/test/groovy/service/AlarmDispatchSpec.groovy`
+- [X] T020 [P] [US2] Add monitor lifecycle specifications for one-minute fixed-rate scheduling, up-to-59-second lateness, no duplicate scheduler task, idle stop, and controlled shutdown in `src/test/groovy/service/AlarmMonitorSpec.groovy`
 
 ### Implementation for User Story 2
 
-- [ ] T021 [US2] Implement due-alarm evaluation, TODO/DOING status gating, persisted trigger deduplication, notification dispatch, and primary repetition state transitions in `src/main/java/zg/acelera/service/AlarmService.java`
-- [ ] T022 [US2] Implement the injected-clock, injected-scheduler monitor with `scheduleAtFixedRate`, explicit `start`/`stop`/`close`, idle shutdown, and failure isolation in `src/main/java/zg/acelera/service/AlarmMonitor.java`
-- [ ] T023 [US2] Implement the default console warning notifier without moving notification or file access into the menu layer in `src/main/java/zg/acelera/util/ConsoleAlarmNotifier.java`
+- [X] T021 [US2] Implement due-alarm evaluation, TODO/DOING status gating, persisted trigger deduplication, notification dispatch, and primary repetition state transitions in `src/main/java/zg/acelera/service/AlarmService.java`
+- [X] T022 [US2] Implement the injected-clock, injected-scheduler monitor with `scheduleAtFixedRate`, explicit `start`/`stop`/`close`, idle shutdown, and failure isolation in `src/main/java/zg/acelera/service/AlarmMonitor.java`
+- [X] T023 [US2] Implement the default console warning notifier without moving notification or file access into the menu layer in `src/main/java/zg/acelera/util/ConsoleAlarmNotifier.java`
 
 **Checkpoint**: User Story 2 is independently verifiable through synchronous
 checks and scheduler lifecycle tests, without waiting for a real minute.
@@ -115,16 +115,16 @@ leaving the monitor running.
 
 ### Tests for User Story 3
 
-- [ ] T024 [P] [US3] Add controller specifications for alarm create, edit, list, and remove success paths plus task-not-found, validation-limit, and persistence error messages in `src/test/groovy/controller/AlarmControllerSpec.groovy`
-- [ ] T025 [P] [US3] Add task controller/service specifications proving task edits preserve alarms, changed end times recalculate and validate triggers, and task deletion cascades through `deleteByTask` in `src/test/groovy/controller/TaskControllerSpec.groovy` and `src/test/groovy/service/TaskServiceSpec.groovy`
-- [ ] T026 [P] [US3] Add menu/integration specifications proving existing filters, priority ordering, and dashboard output remain unchanged while alarm operations are available in `src/test/groovy/controller/TaskMenuSpec.groovy`
+- [X] T024 [P] [US3] Add controller specifications for alarm create, edit, list, and remove success paths plus task-not-found, validation-limit, and persistence error messages in `src/test/groovy/controller/AlarmControllerSpec.groovy`
+- [X] T025 [P] [US3] Add task controller/service specifications proving task edits preserve alarms, changed end times recalculate and validate triggers, and task deletion cascades through `deleteByTask` in `src/test/groovy/controller/TaskControllerSpec.groovy` and `src/test/groovy/service/TaskServiceSpec.groovy`
+- [X] T026 [P] [US3] Add menu/integration specifications proving existing filters, priority ordering, and dashboard output remain unchanged while alarm operations are available in `src/test/groovy/controller/TaskMenuSpec.groovy`
 
 ### Implementation for User Story 3
 
-- [ ] T027 [US3] Implement the typed alarm controller boundary and standardized user-facing error flow for all alarm operations in `src/main/java/zg/acelera/controller/AlarmController.java`
-- [ ] T028 [US3] Wire task edit and delete operations to recalculate/preserve alarms or cascade-delete them without changing existing task persistence semantics in `src/main/java/zg/acelera/service/TaskService.java` and `src/main/java/zg/acelera/controller/TaskController.java`
-- [ ] T029 [US3] Add create/edit/list/remove alarm menu actions and input parsing while preserving existing task filters, ordering, dashboard, and error messages in `src/main/java/zg/acelera/app/TaskMenu.java`
-- [ ] T030 [US3] Construct and inject alarm repository, service, notifier, monitor, and controller collaborators and close the monitor during controlled application shutdown in `src/main/java/zg/acelera/Main.java`
+- [X] T027 [US3] Implement the typed alarm controller boundary and standardized user-facing error flow for all alarm operations in `src/main/java/zg/acelera/controller/AlarmController.java`
+- [X] T028 [US3] Wire task edit and delete operations to recalculate/preserve alarms or cascade-delete them without changing existing task persistence semantics in `src/main/java/zg/acelera/service/TaskService.java` and `src/main/java/zg/acelera/controller/TaskController.java`
+- [X] T029 [US3] Add create/edit/list/remove alarm menu actions and input parsing while preserving existing task filters, ordering, dashboard, and error messages in `src/main/java/zg/acelera/app/TaskMenu.java`
+- [X] T030 [US3] Construct and inject alarm repository, service, notifier, monitor, and controller collaborators and close the monitor during controlled application shutdown in `src/main/java/zg/acelera/Main.java`
 
 **Checkpoint**: All user-facing alarm operations work through the existing CLI
 and existing task behavior remains regression-safe.
@@ -136,10 +136,10 @@ and existing task behavior remains regression-safe.
 **Purpose**: Validate the complete increment, documentation, and release
 quality without broadening feature scope.
 
-- [ ] T031 [P] Run the focused alarm specifications with `./gradlew test --tests '*Alarm*'` and resolve failures in the directly affected `src/test/groovy` or `src/main/java` files
-- [ ] T032 [P] Run the full regression suite with `./gradlew test` and preserve existing behavior across `src/test/groovy/controller`, `src/test/groovy/service`, and `src/test/groovy/repository`
-- [ ] T033 Run release validation with `./gradlew build` and verify the manual CLI scenario from `docs/quickstart.md`
-- [ ] T034 Update feature documentation and acceptance traceability in `docs/quickstart.md` and `docs/contracts/alarm-cli.md` without changing unrelated CLI semantics
+- [X] T031 [P] Run the focused alarm specifications with `./gradlew test --tests '*Alarm*'` and resolve failures in the directly affected `src/test/groovy` or `src/main/java` files
+- [X] T032 [P] Run the full regression suite with `./gradlew test` and preserve existing behavior across `src/test/groovy/controller`, `src/test/groovy/service`, and `src/test/groovy/repository`
+- [X] T033 Run release validation with `./gradlew build` and verify the manual CLI scenario from `docs/quickstart.md`
+- [X] T034 Update feature documentation and acceptance traceability in `docs/quickstart.md` and `docs/contracts/alarm-cli.md` without changing unrelated CLI semantics
 
 ---
 

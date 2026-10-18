@@ -7,6 +7,11 @@ import zg.acelera.app.UserMenu;
 import zg.acelera.controller.CategoryController;
 import zg.acelera.controller.TaskController;
 import zg.acelera.controller.UserController;
+import zg.acelera.controller.AlarmController;
+import zg.acelera.repository.AlarmRepositoryImpl;
+import zg.acelera.service.AlarmMonitor;
+import zg.acelera.service.AlarmService;
+import zg.acelera.util.ConsoleAlarmNotifier;
 import zg.acelera.repository.CategoryRepositoryImpl;
 import zg.acelera.repository.TaskRepositoryImpl;
 import zg.acelera.repository.UserRepositoryImpl;
@@ -19,6 +24,8 @@ import zg.acelera.util.interface_user.UserInterface;
 import zg.acelera.util.interface_user.UserInterfaceImpl;
 
 import java.util.Scanner;
+import java.time.Clock;
+import java.util.concurrent.Executors;
 
 public class Main {
     public static void main(String[] args) {
@@ -32,24 +39,37 @@ public class Main {
         UserMenu userMenu = new UserMenu(usersController, userInterface);
 
 
-        MainMenu mainMenu = getMainMenu(userInterface, taskInterface, userMenu);
-        mainMenu.start();
-
-        scanner.close();
+        ApplicationContext context = getMainMenu(userInterface, taskInterface, userMenu);
+        context.monitor().start();
+        try {
+            context.menu().start();
+        } finally {
+            context.monitor().close();
+            scanner.close();
+        }
     }
 
-    private static MainMenu getMainMenu(UserInterface userInterface, TaskInterface taskInterface, UserMenu userMenu) {
+    private static ApplicationContext getMainMenu(UserInterface userInterface, TaskInterface taskInterface,
+                                                  UserMenu userMenu) {
         CategoryRepositoryImpl categoryRepositoryImpl = new CategoryRepositoryImpl();
         CategoryService categoryService = new CategoryService(categoryRepositoryImpl);
         CategoryController categoryController = new CategoryController(categoryService, userInterface);
         CategoryMenu categoryMenu = new CategoryMenu(categoryController, userInterface);
 
         TaskRepositoryImpl taskRepository = new TaskRepositoryImpl();
-        TaskService taskService = new TaskService(taskRepository);
+        AlarmService alarmService = new AlarmService(new AlarmRepositoryImpl(), taskRepository,
+                Clock.systemDefaultZone(), new ConsoleAlarmNotifier());
+        AlarmMonitor monitor = new AlarmMonitor(alarmService, Executors.newSingleThreadScheduledExecutor(),
+                Clock.systemDefaultZone());
+        AlarmController alarmController = new AlarmController(alarmService, taskInterface);
+        TaskService taskService = new TaskService(taskRepository, alarmService);
         TaskController tasksController = new TaskController(taskService, taskInterface);
-        TaskMenu taskMenu = new TaskMenu(tasksController, taskInterface, categoryMenu);
+        TaskMenu taskMenu = new TaskMenu(tasksController, taskInterface, categoryMenu, alarmController);
 
         MainMenu mainMenu = new MainMenu(userMenu, taskMenu, userInterface);
-        return mainMenu;
+        return new ApplicationContext(mainMenu, monitor);
+    }
+
+    private record ApplicationContext(MainMenu menu, AlarmMonitor monitor) {
     }
 }

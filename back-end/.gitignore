@@ -41,3 +41,8 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+*.log
+*.tmp
+*.swp
+.env*
+alarms.csv

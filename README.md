@@ -102,5 +102,33 @@ A aplicação permite trabalhar com:
 - 👤 Usuários
 - 📋 Tarefas
 - 🏷️ Categorias
+- ⏰ Alarmes vinculados às tarefas
 
 Os dados são persistidos localmente em arquivos, permitindo que as informações sejam mantidas entre diferentes execuções da aplicação.
+
+## ⏰ Alarmes de tarefas
+
+É possível configurar até três alarmes para cada tarefa, informando a
+antecedência em horas e minutos em relação ao horário final. Os alarmes:
+
+- são persistidos separadamente em `alarms.csv`;
+- aceitam apenas instantes futuros e antecedência mínima de um minuto;
+- respeitam a duração da tarefa e não podem ser configurados para além do seu
+  intervalo;
+- podem ser criados, editados, listados e removidos pelo menu de tarefas;
+- disparam no console enquanto a tarefa estiver nos estados `TODO` ou `DOING`;
+- não disparam para tarefas concluídas (`DONE`);
+- permitem a repetição do alarme principal enquanto a tarefa não for concluída;
+- são recuperados quando a aplicação é reaberta após o horário configurado;
+- possuem monitoramento periódico e encerramento controlado quando não há mais
+  alarmes monitoráveis.
+
+Para executar os testes específicos da funcionalidade e a validação completa,
+acesse o diretório do back-end:
+
+```bash
+cd back-end
+./gradlew test --tests '*Alarm*'
+./gradlew test
+./gradlew build
+```

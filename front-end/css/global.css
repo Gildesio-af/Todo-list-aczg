@@ -1,0 +1,55 @@
+* {
+    padding: 0px;
+    margin: 0px;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+:root {
+    --p-blue: #2170E4;
+    --black: #000;
+    --white: #fff;
+    --aside-background: #dce9ff84;
+    --aside-button-hover: #DCE9FF;
+    --main-background: #F4F7FC;
+    --aside-main-background: #81AAFF;
+    --gray-item: #5C5F61;
+    --gray-search: #45464D;
+}
+
+.title {
+    font: 800 40px/48px 'Plus Jakarta Sans', sans-serif;
+    color: var(--black);
+    line-height-step: -0.8px;
+}
+
+.sub-title {
+    font: 600 24px/33px 'Plus Jakarta Sans', sans-serif;
+    color: var(--black);
+}
+
+.button-white {
+    font: 500 14px/14px 'Manrope', Roboto sans-serif;
+    color: var(--white);
+    letter-spacing: 0.7px;
+}
+
+.button-black {
+    font: 500 14px/14px 'Manrope', Roboto sans-serif;
+    color: var(--black);
+    letter-spacing: 0.7px;
+}
+
+.text-black {
+    font: 600 16px/22px 'Manrope', Roboto sans-serif;
+    color: var(--black);
+}
+
+.search-item {
+    font: 500 auto 'Manrope', Roboto sans-serif;
+    color: var(--gray-search)
+}

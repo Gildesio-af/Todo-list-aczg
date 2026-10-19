@@ -1,0 +1,138 @@
+package zg.acelera.repository;
+
+import zg.acelera.domain.Category;
+import zg.acelera.domain.Task;
+import zg.acelera.domain.enums.Status;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+public class TaskRepositoryImpl implements TaskRepository {
+    private static final String FILE_NAME = "tasks.csv";
+    private final Path filePath;
+
+    public TaskRepositoryImpl() {
+        this.filePath = Paths.get(FILE_NAME);
+        initializeFile();
+    }
+
+    public TaskRepositoryImpl(Path path) {
+        this.filePath = path;
+        initializeFile();
+    }
+
+    private void initializeFile() {
+        try {
+            if (!Files.exists(filePath)) Files.createFile(filePath);
+        } catch (IOException e) {
+            throw new RuntimeException("Error initializing tasks file", e);
+        }
+    }
+
+    @Override
+    public List<Task> findAll() throws IOException {
+        List<Task> tasks;
+
+        try (Stream<String> stream = Files.lines(filePath)) {
+            tasks = stream
+                    .filter(line -> !line.trim().isEmpty())
+                    .map(line -> {
+                        String[] data = line.split(";");
+
+                        if (data.length >= 7) {
+                            return new Task(
+                                    data[0],
+                                    data[1],
+                                    Integer.parseInt(data[2]),
+                                    Status.valueOf(data[3]),
+                                    LocalDateTime.parse(data[4]),
+                                    LocalDateTime.parse(data[5]),
+                                    new Category(data[6])
+                            );
+                        }
+                        return null;
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        }
+        return tasks;
+    }
+
+    @Override
+    public List<Task> findByCategory(String category) throws IOException {
+        return findAll().stream()
+                .filter(task -> task.getCategory().getName().equalsIgnoreCase(category))
+                .toList();
+    }
+
+    @Override
+    public List<Task> findOrderedByPriority() throws IOException {
+        return findAll().stream()
+                .sorted(Comparator.comparingInt(Task::getPriority))
+                .toList();
+    }
+
+    @Override
+    public List<Task> findByStatus(String status) throws IOException {
+        return findAll().stream()
+                .filter(task -> task.getStatus().name().equalsIgnoreCase(status))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Task save(Task task) throws IOException {
+        List<Task> tasks = findAll();
+
+        tasks.add(task);
+
+        saveAll(tasks);
+        return task;
+    }
+
+    @Override
+    public Task update(String taskName, Task task) throws IOException {
+        List<Task> tasks = findAll();
+
+        Integer indexToUpdate = tasks.stream()
+                                .filter(t -> t.getName().equals(taskName))
+                                .findAny()
+                                .map(tasks::indexOf)
+                                .orElse(null);
+
+        if (indexToUpdate != null) {
+            tasks.set(indexToUpdate, task);
+            saveAll(tasks);
+            return task;
+        }
+
+        return null;
+    }
+
+    @Override
+    public boolean delete(Task task) throws IOException {
+        List<Task> tasks = new ArrayList<>(findAll());
+
+        boolean removed = tasks.remove(task);
+
+        if (removed) saveAll(tasks);
+
+        return removed;
+    }
+
+    private void saveAll(List<Task> tasks) throws IOException {
+        List<String> lines = tasks.stream()
+                .map(Task::toCsvLine)
+                .collect(Collectors.toList());
+
+        Files.write(filePath, lines);
+    }
+}

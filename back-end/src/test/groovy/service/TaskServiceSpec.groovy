@@ -1,0 +1,406 @@
+package service
+
+import spock.lang.Shared
+import spock.lang.Specification
+import spock.lang.Unroll
+import zg.acelera.domain.Category
+import zg.acelera.domain.Task
+import zg.acelera.domain.enums.Status
+import zg.acelera.dto.TaskDTO
+import zg.acelera.dto.TaskUpdateDTO
+import zg.acelera.repository.TaskRepository
+import zg.acelera.service.TaskService
+
+import java.time.LocalDateTime
+
+class TaskServiceSpec extends Specification{
+
+    TaskService taskService
+    TaskRepository taskRepository
+    TaskDTO createDTO
+    TaskUpdateDTO updateTask
+
+    @Shared
+    LocalDateTime startDate = LocalDateTime.now()
+
+    @Shared
+    LocalDateTime endDate = LocalDateTime.now().plusDays(2)
+
+    @Shared
+    Category category = new Category("ACZG")
+
+    @Shared
+    Task task = Task.builder()
+            .name("Test Task")
+            .description("This is a test task")
+            .priority(1)
+            .status(Status.TODO)
+            .startDate(startDate)
+            .endDate(endDate)
+            .category(category)
+            .build()
+
+    @Shared
+    List<Task> tasks = [task]
+
+    @Shared
+    List<Task> tasksByStatus1 = [
+            task,
+            new Task("Another Task", "Another test task", 2, Status.DOING, startDate, endDate, category)
+    ]
+
+    @Shared
+    List<Task> tasksByStatus2 = [
+            task,
+            new Task("Another Task", "Another test task", 2, Status.DOING, startDate, endDate, category),
+            new Task("Yet Another Task", "Yet another test task", 3, Status.DONE, startDate, endDate, category)
+    ]
+
+    def setup() {
+        taskRepository = Mock()
+        taskService = new TaskService(taskRepository)
+        category = new Category("ACZG")
+
+        createDTO = TaskDTO.builder()
+                .name("Test Task")
+                .description("This is a test task")
+                .priority(1)
+                .status("TODO")
+                .startDate(startDate)
+                .endDate(endDate)
+                .category("ACZG")
+                .build()
+
+        updateTask = TaskUpdateDTO.builder()
+                .name("Updated Task")
+                .description("Updated description")
+                .priority(2)
+                .status("DOING")
+                .startDate(LocalDateTime.now())
+                .endDate(LocalDateTime.now().plusDays(1))
+                .category("Updated Category")
+                .build()
+    }
+
+    def "createTask should return a task when repository create a task successfully"() {
+        when: "creating a new task"
+        Task result = taskService.createTask(createDTO)
+
+        then: "the task should be created successfully"
+        1 * taskRepository.save({it.name == "Test Task"}) >> task
+        result != null
+        result.name == "Test Task"
+    }
+
+    def "createTask should throw an exception when save fails in repository"() {
+        given:
+            taskRepository.save(_) >> {throw new IOException()}
+
+        when: "creating a new task"
+            Task result = taskService.createTask(createDTO)
+
+        then: "service should throw a RuntimeException"
+           RuntimeException e = thrown(RuntimeException)
+            e.getCause() instanceof IOException
+    }
+
+    def "listAllTasks should return a list of tasks when repository returns tasks successfully"() {
+        given: "a list of tasks in the repository"
+            taskRepository.findAll() >> tasks
+
+        when: "listing all tasks"
+            List<Task> result = taskService.listAllTasks()
+
+        then: "the list should contain the expected tasks"
+            result.size() == 1
+            result[0].name == "Test Task"
+    }
+
+    def "listAllTasks should return an empty list when repository returns no tasks"() {
+        given: "an empty list of tasks in the repository"
+            taskRepository.findAll() >> []
+
+        when: "listing all tasks"
+            List<Task> result = taskService.listAllTasks()
+
+        then: "the list should be empty"
+            result.isEmpty()
+    }
+
+    def "listAllTasks should throw an exception when findAll fails in repository"() {
+        given: "repository throws an exception"
+            taskRepository.findAll() >> { throw new IOException() }
+
+        when: "listing all tasks"
+            taskService.listAllTasks()
+
+        then: "service should throw a RuntimeException"
+            RuntimeException e = thrown(RuntimeException)
+            e.getCause() instanceof IOException
+    }
+
+    def "listTasksByCategory should call a method in the repository and return a list of tasks"() {
+        given: "a category"
+            String category = "ACZG"
+
+        when: "listing tasks by category"
+            List<Task> result = taskService.listTasksByCategory(category)
+
+        then: "the repository method should be called"
+            1 * taskRepository.findByCategory(_) >> tasks
+            result.size() == 1
+            result[0].name == "Test Task"
+    }
+
+    def "listTasksByCategory should throw an exception when repository method fails"() {
+        given: "repository throws an exception"
+            taskRepository.findByCategory("ACZG") >> { throw new IOException() }
+
+        when: "listing tasks by category"
+            taskService.listTasksByCategory("ACZG")
+
+        then: "service should throw a RuntimeException"
+            RuntimeException e = thrown(RuntimeException)
+            e.getCause() instanceof IOException
+    }
+
+    def "listTasksOrderedByPriority should call a method in the repository and return a list of tasks"() {
+        when: "listing tasks ordered by priority"
+            List<Task> result = taskService.listTasksOrderedByPriority()
+
+        then: "the repository method should be called"
+            1 * taskRepository.findOrderedByPriority() >> tasks
+            result.size() == 1
+            result[0].name == "Test Task"
+    }
+
+    def "listTasksOrderedByPriority should throw an exception when repository method fails"() {
+        given: "repository throws an exception"
+            taskRepository.findOrderedByPriority() >> { throw new IOException() }
+
+        when: "listing tasks ordered by priority"
+            taskService.listTasksOrderedByPriority()
+
+        then: "service should throw a RuntimeException"
+            RuntimeException e = thrown(RuntimeException)
+            e.getCause() instanceof IOException
+    }
+
+    def "listTasksByStatus should call a method in the repository and return a list of tasks"() {
+        given: "a status"
+            String status = "TODO"
+
+        when: "listing tasks by status"
+            List<Task> result = taskService.listTasksByStatus(status)
+
+        then: "the repository method should be called"
+            1 * taskRepository.findByStatus(_) >> tasks
+            result.size() == 1
+            result[0].name == "Test Task"
+            result[0].status == Status.TODO
+    }
+
+    def "listTasksByStatus should throw an exception when repository method fails"() {
+        given: "repository throws an exception"
+            taskRepository.findByStatus("TODO") >> { throw new IOException() }
+
+        when: "listing tasks by status"
+            taskService.listTasksByStatus("TODO")
+
+        then: "service should throw a RuntimeException"
+            RuntimeException e = thrown(RuntimeException)
+            e.getCause() instanceof IOException
+    }
+
+    @Unroll
+    def "countTasksByStatus should return a string with the count of tasks by status"() {
+        given: "the repository returns a list of tasks"
+        taskRepository.findAll() >> returnList
+
+        when: "counting tasks by status"
+        String result = taskService.countTasksByStatus()
+
+        then: "the result should be a string with the count"
+        result == expectedResult
+
+        where:
+        returnList     || expectedResult
+        tasks          || "TODO: 1 | DOING: 0 | DONE: 0"
+        tasksByStatus1 || "TODO: 1 | DOING: 1 | DONE: 0"
+        tasksByStatus2 || "TODO: 1 | DOING: 1 | DONE: 1"
+    }
+
+    def "countTasksByStatus should throw an exception when repository method fails"() {
+        given:
+        taskRepository.findAll() >> { throw new IOException() }
+
+        when: "counting tasks by status"
+        taskService.countTasksByStatus()
+
+        then: "service should throw a RuntimeException"
+        RuntimeException e = thrown(RuntimeException)
+        e.getCause() instanceof IOException
+    }
+
+    def "updateTask should update a task when it exists"() {
+        given: "a existing task's name and an existing task"
+        String existingTaskName = "Test Task"
+
+        when: "updateTask is called with the existing task name and the new task"
+        Task result = taskService.updateTask(existingTaskName, updateTask)
+
+        then: "repository is queried and updated with correct fields"
+        1 * taskRepository.findAll() >> [task]
+        1 * taskRepository.update(existingTaskName, { Task savedTask ->
+            savedTask.name == "Updated Task" &&
+                    savedTask.description == "Updated description" &&
+                    savedTask.priority == 2 &&
+                    savedTask.status == Status.DOING
+        }) >> task
+
+        result != null
+        result.name == "Updated Task"
+    }
+
+    def "updateTask should throw an exception when the task name is null or empty"() {
+        given: "a null existing task name and a new task"
+        String existingTaskName = taskName
+
+        when: "updateTask is called with a null existing task name and the new task"
+        taskService.updateTask(existingTaskName, updateTask)
+
+        then: "service should throw a RuntimeException"
+        RuntimeException e = thrown(RuntimeException)
+        e.getMessage() == "Task name cannot be null or empty."
+
+        where:
+        taskName << [null, "", "  "]
+    }
+
+    def "updateTask should throw an exception when the repository return null"() {
+        given: "a non-existent task name and a new task"
+        String nonExistingTaskName = "Non-existent Task"
+
+        when: "updateTask is called with a non-existent task name and the new task"
+        taskService.updateTask(nonExistingTaskName, updateTask)
+
+        then: "service should throw a RuntimeException"
+        1 * taskRepository.findAll() >> [task]
+        1 * taskRepository.update(nonExistingTaskName, _ ) >> null
+        RuntimeException e = thrown(RuntimeException)
+        e.getMessage() == "Task not found with name: " + nonExistingTaskName
+    }
+
+    def "updateTask should throw an exception when the repository method throw IOException"() {
+        given: "a existing task's name and a new task"
+        String existingTaskName = "Test Task"
+        when: "updateTask is called with the existing task name and the new task"
+        taskService.updateTask(existingTaskName, updateTask)
+
+        then: "service should throw a RuntimeException"
+        1 * taskRepository.findAll() >> [task]
+        1 * taskRepository.update(existingTaskName, _ ) >> { throw new IOException() }
+        RuntimeException e = thrown(RuntimeException)
+        e.getCause() instanceof IOException
+    }
+
+    def "deleteTask should call the repository method and delete the task when it exists"() {
+        given:
+        taskRepository.findAll() >> tasks
+        when:
+        boolean result = taskService.deleteTask("Test Task")
+
+        then: "the repository method should be called"
+        1 * taskRepository.delete(task) >> true
+        result
+    }
+
+    def "deleteTask should throw an exception when the repository method fails"() {
+        given:
+        taskRepository.findAll() >> tasks
+
+        when:
+        taskService.deleteTask("Test Task")
+
+        then: "service should throw a RuntimeException"
+        1 * taskRepository.delete(task) >> { throw new IOException() }
+        RuntimeException e = thrown(RuntimeException)
+        e.getCause() instanceof IOException
+    }
+
+    def "deleteTask should return false when the task does not exist"() {
+        given:
+        taskRepository.findAll() >> []
+
+        when: "deleting a non-existent task"
+        boolean result = taskService.deleteTask("Non-existent Task")
+
+        then: "the result should be false"
+        !result
+    }
+
+    def "updateTask should recalculate alarms after a task end time changes"() {
+        given:
+        def alarmService = Mock(zg.acelera.service.AlarmService, constructorArgs: [null, null])
+        def service = new TaskService(taskRepository, alarmService)
+        def updatedTask = new Task("Test Task", "Updated", 1, Status.TODO, startDate, endDate.plusHours(1), category)
+        def dto = TaskUpdateDTO.builder().endDate(endDate.plusHours(1)).build()
+
+        when:
+        service.updateTask("Test Task", dto)
+
+        then:
+        1 * taskRepository.findAll() >> [task]
+        1 * taskRepository.update("Test Task", _) >> updatedTask
+        1 * alarmService.recalculateForTask({ it.name == "Test Task" && it.endDate == endDate.plusHours(1) })
+    }
+
+    def "renaming a task preserves its alarm association through the alarm service"() {
+        given:
+        def alarmService = Mock(zg.acelera.service.AlarmService, constructorArgs: [null, null])
+        def service = new TaskService(taskRepository, alarmService)
+        def renamedTask = new Task("Renamed Task", task.description, task.priority, task.status,
+                task.startDate, task.endDate, task.category)
+        def dto = TaskUpdateDTO.builder().name("Renamed Task").build()
+
+        when:
+        service.updateTask("Test Task", dto)
+
+        then:
+        1 * taskRepository.findAll() >> [task]
+        1 * taskRepository.update("Test Task", _) >> renamedTask
+        1 * alarmService.renameTaskAlarms("Test Task", renamedTask)
+        0 * alarmService.recalculateForTask(_)
+    }
+
+    def "failed task update does not invoke alarm lifecycle changes"() {
+        given:
+        def alarmService = Mock(zg.acelera.service.AlarmService, constructorArgs: [null, null])
+        def service = new TaskService(taskRepository, alarmService)
+        def dto = TaskUpdateDTO.builder().endDate(endDate.plusHours(1)).build()
+
+        when:
+        service.updateTask("Test Task", dto)
+
+        then:
+        1 * taskRepository.findAll() >> [task]
+        1 * taskRepository.update("Test Task", _) >> null
+        thrown(RuntimeException)
+        0 * alarmService._
+    }
+
+    def "deleting a task cascades to its alarms after task deletion"() {
+        given:
+        def alarmService = Mock(zg.acelera.service.AlarmService, constructorArgs: [null, null])
+        def service = new TaskService(taskRepository, alarmService)
+
+        when:
+        def deleted = service.deleteTask("Test Task")
+
+        then:
+        1 * taskRepository.findAll() >> [task]
+        1 * taskRepository.delete(task) >> true
+        1 * alarmService.deleteByTask("Test Task")
+        deleted
+    }
+}

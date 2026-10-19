@@ -1,11 +1,18 @@
-# 📌 TODO List & User Manager (CLI)
+# 📌 TODO List & TaskFlow
 
-Uma aplicação interativa de linha de comando (CLI), desenvolvida em **Java puro**, para o gerenciamento de **usuários, tarefas e categorias**.
+Este projeto é composto por duas aplicações de gerenciamento de tarefas:
+1. **Back-end (CLI)**: Uma aplicação interativa de linha de comando desenvolvida em **Java puro**. O sistema foi projetado seguindo princípios de **Clean Architecture**, utilizando a API moderna **Java NIO** para persistência em arquivos locais.
+2. **Front-end (TaskFlow)**: Uma aplicação Web interativa desenvolvida com HTML, CSS e JavaScript para gerenciamento visual de tarefas.
 
-O sistema foi projetado seguindo princípios de **Clean Architecture**, com separação de responsabilidades em camadas como **Controller, Service e Repository**. A persistência dos dados é realizada localmente utilizando a API moderna **Java NIO**.
+## 📂 Estrutura do Projeto
+
+O repositório foi organizado nas seguintes pastas:
+- `/back-end`: Contém o código fonte da aplicação CLI em Java.
+- `/front-end`: Contém a interface web do gerenciador de tarefas (TaskFlow).
 
 ## 🚀 Tecnologias e Conceitos Utilizados
 
+### 🖥️ Back-end (CLI em Java)
 - **Java 17+**
     - Records
     - Stream API
@@ -27,6 +34,10 @@ O sistema foi projetado seguindo princípios de **Clean Architecture**, com sepa
 - **Clean Architecture**
     - Separação de responsabilidades
     - Camadas de Controller, Service e Repository
+### 🌐 Front-end (Web App)
+- **HTML5 & CSS3**: Estruturação semântica e estilização moderna, com foco em uma interface limpa utilizando web fonts.
+- **Vanilla JavaScript (ES6 Modules)**: Componentização e separação da lógica de negócio em módulos (`main.js`, `storage.js`, `ui.js`, `constants.js`).
+- **Local Storage API**: Persistência de dados diretamente no navegador. As tarefas são criadas, editadas, filtradas e removidas utilizando apenas os recursos locais do browser, sem dependência de um servidor externo.
 
 ## 📋 Pré-requisitos
 
@@ -52,11 +63,22 @@ git clone https://github.com/Gildesio-af/Todo-list-aczg.git
 cd Todo-list-aczg
 ```
 
-### 2. Executando via Terminal com Gradle Wrapper
+### 2. Rodando o Front-end (Web App)
 
-O projeto já possui o Gradle Wrapper, portanto não é necessário instalar o Gradle manualmente.
+O funcionamento do front-end baseia-se no armazenamento local do navegador.
+1. Navegue até a pasta do front-end: `cd front-end`
+2. Abra o arquivo `index.html` em seu navegador web.
+3. *(Opcional)* Utilize uma extensão como o **Live Server** no VS Code para executar a aplicação com recarregamento automático.
 
-Estando dentro da pasta do projeto, execute:
+### 3. Executando o Back-end (Terminal com Gradle Wrapper)
+
+O projeto Java já possui o Gradle Wrapper. Estando na raiz do repositório, acesse a pasta do back-end:
+
+```bash
+cd back-end
+```
+
+Em seguida, execute os comandos:
 
 Linux / macOS
 
@@ -71,9 +93,9 @@ gradlew.bat build
 gradlew.bat run --console=plain -q
 ```
 
-## 🖥️ Executando a Aplicação
+## 🖥️ Utilizando a Aplicação CLI (Back-end)
 
-Após executar o comando run, a aplicação será iniciada diretamente no terminal e apresentará seu menu interativo para gerenciamento dos dados.
+Após executar o comando run, a aplicação CLI será iniciada diretamente no terminal e apresentará seu menu interativo para gerenciamento dos dados.
 
 A aplicação permite trabalhar com:
 

@@ -109,6 +109,15 @@ class TaskControllerSpec extends Specification {
         1 * taskInterface.showMessage("Task 'Unknown' not found.")
     }
 
+    def "deleteTask delegates cascade behavior to the task service"() {
+        when:
+        controller.deleteTask("Task with alarms")
+
+        then:
+        1 * taskService.deleteTask("Task with alarms") >> true
+        1 * taskInterface.showMessage("Task 'Task with alarms' deleted successfully.")
+    }
+
     def "listAllTasks should print header and tasks when list is not empty"() {
         given: "a list with one mock task"
         Task mockTask = Mock(Task)

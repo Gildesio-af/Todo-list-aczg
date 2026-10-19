@@ -1,6 +1,5 @@
 package zg.acelera.service;
 
-import lombok.RequiredArgsConstructor;
 import zg.acelera.domain.Category;
 import zg.acelera.domain.Task;
 import zg.acelera.domain.enums.Status;
@@ -11,9 +10,23 @@ import zg.acelera.repository.TaskRepository;
 import java.io.IOException;
 import java.util.List;
 
-@RequiredArgsConstructor
 public class TaskService {
     private final TaskRepository taskRepository;
+    private final AlarmService alarmService;
+
+    public TaskService() {
+        this.taskRepository = null;
+        this.alarmService = null;
+    }
+
+    public TaskService(TaskRepository taskRepository) {
+        this(taskRepository, null);
+    }
+
+    public TaskService(TaskRepository taskRepository, AlarmService alarmService) {
+        this.taskRepository = taskRepository;
+        this.alarmService = alarmService;
+    }
 
     public Task createTask(TaskDTO dto) {
         try {
@@ -40,13 +53,24 @@ public class TaskService {
 
         try {
             Task existingTask = findTaskByName(taskName);
-            dto.update(existingTask);
-            Task updatedTask = taskRepository.update(taskName, existingTask);
+            String previousName = existingTask == null ? null : existingTask.getName();
+            Task taskToUpdate = copyTask(existingTask);
+            dto.update(taskToUpdate);
+            Task persistedTask = taskRepository.update(taskName, taskToUpdate);
+            Task updatedTask = persistedTask == null ? null : taskToUpdate;
 
-            if (updatedTask != null)
+            if (updatedTask != null) {
+                if (alarmService != null) {
+                    if (previousName != null && !previousName.equals(updatedTask.getName())) {
+                        alarmService.renameTaskAlarms(previousName, updatedTask);
+                    } else {
+                        alarmService.recalculateForTask(updatedTask);
+                    }
+                }
                 return updatedTask;
-            else
+            } else {
                 throw new RuntimeException("Task not found with name: " + taskName);
+            }
         } catch (IOException e) {
             throw new RuntimeException("Error updating task: " + e.getMessage(), e);
         }
@@ -104,7 +128,9 @@ public class TaskService {
             if (taskToDelete == null) {
                 return false;
             }
-            return taskRepository.delete(taskToDelete);
+            boolean deleted = taskRepository.delete(taskToDelete);
+            if (deleted && alarmService != null) alarmService.deleteByTask(taskToDelete.getName());
+            return deleted;
         } catch (IOException e) {
             throw new RuntimeException("Error deleting task: " + e.getMessage(), e);
         }
@@ -115,5 +141,11 @@ public class TaskService {
                 .filter(t -> t.getName().equalsIgnoreCase(name.trim()))
                 .findFirst()
                 .orElse(null);
+    }
+
+    private Task copyTask(Task task) {
+        if (task == null) return null;
+        return new Task(task.getName(), task.getDescription(), task.getPriority(), task.getStatus(),
+                task.getStartDate(), task.getEndDate(), task.getCategory());
     }
 }
